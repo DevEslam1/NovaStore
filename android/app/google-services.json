@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "658125819028",
+    "project_id": "novastore-3739b",
+    "storage_bucket": "novastore-3739b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658125819028:android:0659c3b0ac7fd475a23881",
+        "android_client_info": {
+          "package_name": "com.example.newstore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM4Z_0YSDdDc3DbH6lk8ZWlYV5uHCzFRw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,20 @@
+{
+  "app_name": "The Pavilion",
+  "welcome_title": "Modern Marketplace",
+  "login": "Login",
+  "email": "Email Address",
+  "password": "Password",
+  "forgot_password": "Forgot Password?",
+  "get_started": "Get Started",
+  "home": "Home",
+  "shop": "Shop",
+  "cart": "Cart",
+  "orders": "Orders",
+  "profile": "Profile",
+  "search_hint": "Search products, brands...",
+  "flash_deals": "Flash Deals",
+  "recommended": "Recommended For You",
+  "view_all": "View All",
+  "explore_now": "Explore Now",
+  "autumn_collection": "The Autumn\nCollection."
+}

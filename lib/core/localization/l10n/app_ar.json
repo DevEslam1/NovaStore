@@ -1,0 +1,20 @@
+{
+  "app_name": "ذا بافيليون",
+  "welcome_title": "سوق حديث",
+  "login": "تسجيل الدخول",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forgot_password": "نسيت كلمة المرور؟",
+  "get_started": "ابدأ الآن",
+  "home": "الرئيسية",
+  "shop": "المتجر",
+  "cart": "السلة",
+  "orders": "الطلبات",
+  "profile": "الحساب",
+  "search_hint": "ابحث عن منتجات، براندات...",
+  "flash_deals": "عروض فلاش",
+  "recommended": "مقترح لك",
+  "view_all": "عرض الكل",
+  "explore_now": "استكشف الآن",
+  "autumn_collection": "مجموعة\nالخريف."
+}
