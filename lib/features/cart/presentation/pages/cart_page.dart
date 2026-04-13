@@ -84,12 +84,19 @@ class _CartItemTile extends StatelessWidget {
           // Product Image
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              item.product.imageUrl,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-            ),
+            child: item.product.imageUrl.startsWith('assets/')
+                ? Image.asset(
+                    item.product.imageUrl,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    item.product.imageUrl,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(width: 16),
           // Product Details

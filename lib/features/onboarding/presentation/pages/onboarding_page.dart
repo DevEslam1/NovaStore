@@ -25,9 +25,12 @@ class OnboardingPage extends StatelessWidget {
               ),
               child: Opacity(
                 opacity: 0.3,
-                child: Image.network(
-                  'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1000',
+                child: Image.asset(
+                  'assets/images/onboarding/onboarding_bg.png',
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
