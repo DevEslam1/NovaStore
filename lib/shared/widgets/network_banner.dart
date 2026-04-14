@@ -49,16 +49,20 @@ class _NetworkBannerState extends State<NetworkBanner> {
             color: Colors.transparent,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              color: const Color(0xFFFF4444),
+              color: Theme.of(context).colorScheme.error,
               child: Row(
-                children: const [
-                  Icon(Icons.wifi_off_rounded, color: Colors.white, size: 20),
-                  SizedBox(width: 12),
+                children: [
+                  Icon(
+                    Icons.wifi_off_rounded,
+                    color: Theme.of(context).colorScheme.onError,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'No internet connection',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onError,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),

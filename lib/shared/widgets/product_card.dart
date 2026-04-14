@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:newstore/core/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 /// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
@@ -68,12 +70,12 @@ class ProductCard extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.8),
+                              color: theme.colorScheme.surface.withValues(alpha: 0.8),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                              color: isFav ? Colors.red : theme.colorScheme.onSurfaceVariant,
+                              color: isFav ? Colors.red : theme.colorScheme.onSurface,
                               size: 18,
                             ),
                           ),
@@ -128,22 +130,7 @@ class ProductCard extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           context.read<CartBloc>().add(AddToCart(product));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${product.name} added to cart'),
-                              duration: const Duration(seconds: 2),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              action: SnackBarAction(
-                                label: 'View Cart',
-                                onPressed: () {
-                                  // context.push(AppRouter.cart);
-                                },
-                              ),
-                            ),
-                          );
+                          _showAddedToCartToast(context, product.name, theme);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(8),
@@ -151,9 +138,9 @@ class ProductCard extends StatelessWidget {
                             color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.add_shopping_cart_rounded,
-                            color: Colors.white,
+                            color: theme.colorScheme.onPrimary,
                             size: 18,
                           ),
                         ),
@@ -198,5 +185,111 @@ class ProductCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static OverlayEntry? _currentToast;
+
+  void _showAddedToCartToast(BuildContext context, String productName, ThemeData theme) {
+    // Remove any existing toast
+    _currentToast?.remove();
+    _currentToast = null;
+
+    final overlay = Overlay.of(context);
+    final controller = AnimationController(
+      vsync: Navigator.of(context),
+      duration: const Duration(milliseconds: 300),
+    );
+    final animation = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (ctx) => Positioned(
+        bottom: MediaQuery.of(context).padding.bottom + 100,
+        left: 16,
+        right: 16,
+        child: FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.5),
+              end: Offset.zero,
+            ).animate(animation),
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.inverseSurface,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: theme.colorScheme.secondary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '$productName added to cart',
+                        style: TextStyle(
+                          color: theme.colorScheme.onInverseSurface,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        entry.remove();
+                        _currentToast = null;
+                        controller.dispose();
+                        context.push(AppRouter.cart);
+                      },
+                      child: Text(
+                        'View Cart',
+                        style: TextStyle(
+                          color: theme.colorScheme.secondary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    _currentToast = entry;
+    overlay.insert(entry);
+    controller.forward();
+
+    // Auto-dismiss after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (_currentToast == entry) {
+        controller.reverse().then((_) {
+          if (entry.mounted) {
+            entry.remove();
+          }
+          controller.dispose();
+          _currentToast = null;
+        });
+      }
+    });
   }
 }

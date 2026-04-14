@@ -130,7 +130,7 @@ class _CustomButtonState extends State<CustomButton>
             borderRadius: BorderRadius.circular(999),
             onTap: widget.onPressed,
             child: Center(
-              child: _buildLabel(Colors.white),
+              child: _buildLabel(theme.colorScheme.onSecondary),
             ),
           ),
         ),

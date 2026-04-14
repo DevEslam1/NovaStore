@@ -52,7 +52,7 @@ class OnboardingPage extends StatelessWidget {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.05),
+                color: theme.colorScheme.onPrimary.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -64,7 +64,7 @@ class OnboardingPage extends StatelessWidget {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.03),
+                color: theme.colorScheme.onPrimary.withValues(alpha: 0.03),
               ),
             ),
           ),
@@ -83,12 +83,12 @@ class OnboardingPage extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: theme.colorScheme.onPrimary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.storefront_rounded,
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimary,
                           size: 22,
                         ),
                       ),
@@ -96,7 +96,7 @@ class OnboardingPage extends StatelessWidget {
                       Text(
                         'NovaStore',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimary,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.0,
                         ),
@@ -110,7 +110,7 @@ class OnboardingPage extends StatelessWidget {
                   Text(
                     'Discover\nCurated\nExcellence',
                     style: theme.textTheme.displayLarge?.copyWith(
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                       height: 1.05,
                       fontWeight: FontWeight.w800,
                     ),
@@ -129,7 +129,7 @@ class OnboardingPage extends StatelessWidget {
                     'Step into a world of premium products, '
                     'handpicked from the finest brands across the globe.',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.75),
+                      color: theme.colorScheme.onPrimary.withValues(alpha: 0.75),
                       height: 1.6,
                     ),
                   ),
@@ -150,9 +150,9 @@ class OnboardingPage extends StatelessWidget {
                       child: Text(
                         'Already have an account? Sign In',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                           decoration: TextDecoration.underline,
-                          decorationColor: Colors.white.withValues(alpha: 0.4),
+                          decorationColor: theme.colorScheme.onPrimary.withValues(alpha: 0.4),
                         ),
                       ),
                     ),

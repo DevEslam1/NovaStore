@@ -39,7 +39,7 @@ class HomeSkeleton extends StatelessWidget {
                     child: Container(
                       width: 100,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: baseColor,
                         borderRadius: BorderRadius.circular(999),
                       ),
                     ),
@@ -80,7 +80,7 @@ class HomeSkeleton extends StatelessWidget {
         width: 150,
         height: 24,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(4),
         ),
       ),

@@ -19,7 +19,7 @@ class ProductCardSkeleton extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: baseColor,
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
