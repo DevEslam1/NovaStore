@@ -47,10 +47,12 @@ class NotificationService {
     }
 
     // Listen for token refresh
-    _fcm.onTokenRefresh.listen((String token) {
-      log('FCM Token Refreshed: $token');
-      _sendTokenToServer(token);
-    });
+    if (!Platform.isIOS) {
+      _fcm.onTokenRefresh.listen((String token) {
+        log('FCM Token Refreshed: $token');
+        _sendTokenToServer(token);
+      });
+    }
 
     // Handle background messages
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -76,7 +78,7 @@ class NotificationService {
 
     // Monitor auth state changes - resend token when user logs in
     authRepository.authStateChanges.listen((user) async {
-      if (user != null) {
+      if (user != null && !Platform.isIOS) {
         final token = await _fcm.getToken();
         if (token != null) {
           log('User logged in, syncing FCM token: $token');
