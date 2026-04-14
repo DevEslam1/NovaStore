@@ -23,7 +23,7 @@ final sl = GetIt.instance; // sl stands for Service Locator
 Future<void> init() async {
   //! Features - Auth
   // Blocs
-  sl.registerFactory(() => AuthBloc(authRepository: sl()));
+  sl.registerLazySingleton(() => AuthBloc(authRepository: sl()));
   
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -40,7 +40,7 @@ Future<void> init() async {
 
   //! Features - Products
   // Blocs
-  sl.registerFactory(() => ProductsBloc(getProductsUseCase: sl()));
+  sl.registerLazySingleton(() => ProductsBloc(getProductsUseCase: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetProductsUseCase(sl()));
@@ -60,8 +60,8 @@ Future<void> init() async {
 
   //! Features - Core & Common
   // Blocs
-  sl.registerFactory(() => AppConfigBloc());
-  sl.registerFactory(() => CartBloc());
+  sl.registerLazySingleton(() => AppConfigBloc());
+  sl.registerLazySingleton(() => CartBloc());
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

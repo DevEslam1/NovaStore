@@ -43,6 +43,8 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   ProductsBloc({required this.getProductsUseCase}) : super(ProductsInitial()) {
     on<GetProductsRequested>((event, emit) async {
+      if (state is ProductsLoaded || state is ProductsLoading) return;
+      
       emit(ProductsLoading());
       final result = await getProductsUseCase();
       result.fold(

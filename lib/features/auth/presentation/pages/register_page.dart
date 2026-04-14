@@ -5,25 +5,23 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../bloc/auth_bloc.dart';
 
-/// Authentication screen — "The Curated Pavilion" design.
-///
-/// Uses tonal layering: main background = surface, input background = surfaceContainerHighest.
-/// Editorial typography with tight letter-spacing for brand headline.
-/// Pill-shaped primary CTA, ghost-style secondary CTA.
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+/// Registration screen — "The Curated Pavilion" design.
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -52,7 +50,21 @@ class _LoginPageState extends State<LoginPage> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            automaticallyImplyLeading: false,
+            leading: GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHigh,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+              ),
+            ),
           ),
           body: SafeArea(
             child: SingleChildScrollView(
@@ -100,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Step into a world of curated excellence.',
+                      'Become a member of our curated collective.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.outline,
                       ),
@@ -110,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Welcome copy
                     Text(
-                      'Welcome\nBack',
+                      'Join the\nPavilion',
                       style: theme.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: theme.colorScheme.onSurface,
@@ -128,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Access your curated collection and exclusive offers.',
+                      'Create an account to start your curated journey.',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.outline,
                         height: 1.5,
@@ -138,6 +150,21 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 36),
 
                     // Form fields
+                    CustomTextField(
+                      label: 'Full Name',
+                      hint: 'enter your name',
+                      controller: _nameController,
+                      prefixIcon: Icon(
+                        Icons.person_outline_rounded,
+                        color: theme.colorScheme.outline,
+                        size: 20,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Name is required';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     CustomTextField(
                       label: 'Email Address',
                       hint: 'enter your email',
@@ -150,13 +177,14 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Email is required';
+                        if (!value.contains('@')) return 'Enter a valid email';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     CustomTextField(
                       label: 'Password',
-                      hint: 'enter your password',
+                      hint: 'create a password',
                       isPassword: true,
                       controller: _passwordController,
                       prefixIcon: Icon(
@@ -168,55 +196,31 @@ class _LoginPageState extends State<LoginPage> {
                         if (value == null || value.isEmpty) {
                           return 'Password is required';
                         }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
                         return null;
                       },
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: theme.colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 36),
 
-                    // CTA buttons
+                    // CTA button
                     CustomButton(
-                      text: 'Sign In',
+                      text: 'Create Account',
                       isLoading: isLoading,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<AuthBloc>().add(
-                                AuthSignInRequested(
-                                  _emailController.text.trim(),
-                                  _passwordController.text,
+                                AuthSignUpRequested(
+                                  email: _emailController.text.trim(),
+                                  password: _passwordController.text,
+                                  name: _nameController.text.trim(),
                                 ),
                               );
                         }
                       },
                       width: double.infinity,
-                    ),
-                    const SizedBox(height: 14),
-                    // Ghost/tertiary CTA
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => context
-                                .read<AuthBloc>()
-                                .add(AuthSignInAsGuestRequested()),
-                        child: const Text('Continue as Guest'),
-                      ),
                     ),
 
                     const SizedBox(height: 28),
@@ -225,15 +229,15 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account?",
+                          "Already have an account?",
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.outline,
                           ),
                         ),
                         TextButton(
-                          onPressed: () => context.push('/register'),
+                          onPressed: () => context.pop(),
                           child: Text(
-                            'Sign Up',
+                            'Sign In',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               color: theme.colorScheme.secondary,

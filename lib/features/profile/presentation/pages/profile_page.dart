@@ -55,7 +55,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Eslam Medhat',
+                          'Eslam Mahmoud',
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
@@ -114,8 +114,8 @@ class ProfilePage extends StatelessWidget {
                       onTap: () {
                         final newLocale =
                             configState.locale.languageCode == 'en'
-                                ? const Locale('ar')
-                                : const Locale('en');
+                            ? const Locale('ar')
+                            : const Locale('en');
                         context.read<AppConfigBloc>().add(
                           ChangeLocale(newLocale),
                         );
@@ -128,9 +128,7 @@ class ProfilePage extends StatelessWidget {
                       switchValue: configState.themeMode == ThemeMode.dark,
                       onSwitchChanged: (value) {
                         context.read<AppConfigBloc>().add(
-                          ToggleTheme(
-                            value ? ThemeMode.dark : ThemeMode.light,
-                          ),
+                          ToggleTheme(value ? ThemeMode.dark : ThemeMode.light),
                         );
                       },
                       onTap: () {},
@@ -198,8 +196,9 @@ class _ProfileTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tileColor =
-        isDestructive ? const Color(0xFFFF4444) : theme.colorScheme.primary;
+    final tileColor = isDestructive
+        ? const Color(0xFFFF4444)
+        : theme.colorScheme.primary;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -235,22 +234,19 @@ class _ProfileTile extends StatelessWidget {
           ),
         ),
         trailing: isSwitch
-            ? Switch(
-                value: switchValue ?? false,
-                onChanged: onSwitchChanged,
-              )
+            ? Switch(value: switchValue ?? false, onChanged: onSwitchChanged)
             : (trailing != null
-                ? Text(
-                    trailing!,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                  ? Text(
+                      trailing!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
+                    )
+                  : Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
                       color: theme.colorScheme.outline,
-                    ),
-                  )
-                : Icon(
-                    Icons.chevron_right_rounded,
-                    size: 20,
-                    color: theme.colorScheme.outline,
-                  )),
+                    )),
         onTap: isSwitch ? null : onTap,
       ),
     );

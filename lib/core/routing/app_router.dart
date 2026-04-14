@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/register_page.dart';
+
 import '../../features/product/presentation/pages/product_details_page.dart';
 import '../../features/cart/presentation/pages/checkout_page.dart';
 import '../../features/cart/presentation/pages/payment_page.dart';
@@ -17,6 +19,8 @@ class AppRouter {
   static const String home = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String register = '/register';
+
   static const String productDetails = '/product-details';
   static const String checkout = '/checkout';
   static const String payment = '/payment';
@@ -29,12 +33,14 @@ class AppRouter {
     redirect: (context, state) {
       final authState = sl<AuthBloc>().state;
       final bool loggingIn = state.matchedLocation == login;
+      final bool registering = state.matchedLocation == register;
       final bool onOnboarding = state.matchedLocation == onboarding;
+
 
       // Unauthenticated users can only be on login or onboarding
       if (authState is Unauthenticated || authState is AuthInitial) {
-        if (!loggingIn && !onOnboarding) return login;
-        return null; // Stay where they are if they are already on login or onboarding
+        if (!loggingIn && !onOnboarding && !registering) return login;
+        return null; // Stay where they are if they are already on login, onboarding or register
       }
 
       // Authenticated users should not see login page
@@ -56,6 +62,10 @@ class AppRouter {
       GoRoute(
         path: login,
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: register,
+        builder: (context, state) => const RegisterPage(),
       ),
       GoRoute(
         path: checkout,

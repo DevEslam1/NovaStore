@@ -25,6 +25,22 @@ class AuthSignInAsGuestRequested extends AuthEvent {}
 
 class AuthSignOutRequested extends AuthEvent {}
 
+class AuthSignUpRequested extends AuthEvent {
+  final String email;
+  final String password;
+  final String name;
+
+  const AuthSignUpRequested({
+    required this.email,
+    required this.password,
+    required this.name,
+  });
+
+  @override
+  List<Object?> get props => [email, password, name];
+}
+
+
 // States
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -62,12 +78,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignInRequested>(_onAuthSignInRequested);
     on<AuthSignInAsGuestRequested>(_onAuthSignInAsGuestRequested);
     on<AuthSignOutRequested>(_onAuthSignOutRequested);
+    on<AuthSignUpRequested>(_onAuthSignUpRequested);
 
-    _authSubscription = authRepository.authStateChanges.listen((user) {
-      if (user != null) {
+
+    _authSubscription = authRepository.authStateChanges.distinct().listen((user) {
+      // Only trigger a check if we're not currently in a loading state
+      // (as loading states are typically followed by an explicit emit)
+      if (state is! AuthLoading) {
         add(AuthCheckRequested());
-      } else {
-        add(AuthSignOutRequested());
       }
     });
   }
@@ -108,6 +126,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     await authRepository.signOut();
     emit(Unauthenticated());
+  }
+
+  Future<void> _onAuthSignUpRequested(AuthSignUpRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final result = await authRepository.signUpWithEmailPassword(
+      event.email,
+      event.password,
+      event.name,
+    );
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(Authenticated(user)),
+    );
   }
 
   @override

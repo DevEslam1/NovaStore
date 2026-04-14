@@ -100,7 +100,7 @@ class CheckoutPage extends StatelessWidget {
             const SizedBox(height: 12),
             _SelectableCard(
               title: 'Apple Pay',
-              subtitle: 'Linked to eslam@example.com',
+              subtitle: 'Linked to Xdev.eslam@gmail.com',
               icon: Icons.apple_rounded,
               isSelected: false,
               onTap: () {},
@@ -127,15 +127,26 @@ class CheckoutPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _SummaryRow(label: 'Subtotal', value: '\$948.00', theme: theme),
+                  _SummaryRow(
+                    label: 'Subtotal',
+                    value: '\$948.00',
+                    theme: theme,
+                  ),
                   const SizedBox(height: 10),
-                  _SummaryRow(label: 'Shipping', value: 'Free', theme: theme, isHighlighted: true),
+                  _SummaryRow(
+                    label: 'Shipping',
+                    value: 'Free',
+                    theme: theme,
+                    isHighlighted: true,
+                  ),
                   const SizedBox(height: 10),
                   _SummaryRow(label: 'Tax', value: '\$45.00', theme: theme),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Divider(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.2,
+                      ),
                     ),
                   ),
                   Row(
@@ -186,9 +197,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-      ),
+      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
     );
   }
 }
