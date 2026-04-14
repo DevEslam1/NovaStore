@@ -44,11 +44,6 @@
   <img src="assets/screenshots/order_tracking.png" alt="Order Tracking" width="180" />
 </p>
 
-<p align="center">
-  <img src="assets/screenshots/orders.png" alt="Orders" width="180" />
-  &nbsp;
-  <img src="assets/screenshots/profile.png" alt="Profile" width="180" />
-</p>
 
 ---
 
