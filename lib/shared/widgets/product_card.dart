@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
+import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 /// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
@@ -40,14 +42,45 @@ class ProductCard extends StatelessWidget {
           children: [
             // ── Product Image ──
             Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: _buildImage(theme),
-                ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: _buildImage(theme),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: BlocBuilder<FavoritesBloc, FavoritesState>(
+                      builder: (context, state) {
+                        final isFav = state.isFavorite(product.id);
+                        return GestureDetector(
+                          onTap: () {
+                            context.read<FavoritesBloc>().add(ToggleFavorite(product));
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.8),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              color: isFav ? Colors.red : theme.colorScheme.onSurfaceVariant,
+                              size: 18,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
             // ── Details ──

@@ -346,6 +346,8 @@ class _PaymentPageState extends State<PaymentPage> {
               if (state is OrderCreatedSuccess) {
                 // Clear cart after success
                 context.read<CartBloc>().add(ClearCart());
+                // Refresh orders
+                context.read<OrdersBloc>().add(LoadOrders(state.order.userId));
                 _showPaymentSuccessDialog(context, state.order);
               } else if (state is OrdersError) {
                 ScaffoldMessenger.of(context).showSnackBar(

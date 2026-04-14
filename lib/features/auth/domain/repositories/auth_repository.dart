@@ -10,5 +10,6 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> signOut();
   Future<Either<Failure, UserEntity>> signInAsGuest();
   Future<Either<Failure, UserEntity?>> getCurrentUser();
+  Future<Either<Failure, void>> updateDeviceToken(String token);
   Stream<UserEntity?> get authStateChanges;
 }

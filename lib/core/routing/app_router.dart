@@ -11,6 +11,8 @@ import '../../features/checkout/presentation/pages/checkout_page.dart';
 import '../../features/checkout/presentation/pages/payment_page.dart';
 import '../../features/shop/presentation/pages/search_page.dart';
 import '../../features/shop/presentation/pages/category_products_page.dart';
+import '../../features/cart/presentation/pages/cart_page.dart';
+import '../../features/favorites/presentation/pages/favorites_page.dart';
 import '../../features/order/presentation/pages/orders_page.dart';
 import '../../features/order/presentation/pages/order_tracking_page.dart';
 import '../../shared/widgets/main_scaffold.dart';
@@ -23,6 +25,7 @@ import '../di/injection_container.dart';
 
 import 'package:newstore/features/splash/presentation/pages/splash_page.dart';
 import 'package:newstore/features/auth/presentation/pages/otp_page.dart';
+import 'package:newstore/features/notifications/presentation/pages/notification_page.dart';
 
 class AppRouter {
   static const String splash = '/splash';
@@ -41,6 +44,9 @@ class AppRouter {
   static const String orderTracking = '/order-tracking';
   static const String addresses = '/addresses';
   static const String addAddress = '/add-address';
+  static const String cart = '/cart';
+  static const String favorites = '/favorites';
+  static const String notifications = '/notifications';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -139,6 +145,18 @@ class AppRouter {
       GoRoute(
         path: orders,
         builder: (context, state) => const OrdersPage(),
+      ),
+      GoRoute(
+        path: cart,
+        builder: (context, state) => const CartPage(),
+      ),
+      GoRoute(
+        path: favorites,
+        builder: (context, state) => const FavoritesPage(),
+      ),
+      GoRoute(
+        path: notifications,
+        builder: (context, state) => const NotificationPage(),
       ),
       GoRoute(
         path: orderTracking,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../../../../core/error/exceptions.dart';
 
@@ -10,6 +11,7 @@ abstract class FirebaseAuthDataSource {
   Future<UserModel> signInWithOtp(String verificationId, String smsCode);
   Future<void> signOut();
   Future<UserModel> signInAnonymously();
+  Future<void> updateUserDeviceToken(String token);
   UserModel? getCurrentUser();
   Stream<UserModel?> get authStateChanges;
 }
@@ -138,4 +140,16 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   Stream<UserModel?> get authStateChanges => firebaseAuth.authStateChanges().map(
         (user) => user != null ? UserModel.fromFirebaseUser(user) : null,
       );
+
+  @override
+  Future<void> updateUserDeviceToken(String token) async {
+    final user = firebaseAuth.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(user.uid).update({
+        'deviceToken': token,
+        'lastTokenUpdate': FieldValue.serverTimestamp(),
+      });
+    }
+  }
 }

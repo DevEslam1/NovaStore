@@ -4,7 +4,9 @@ import 'package:newstore/shared/domain/entities/product.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newstore/core/routing/app_router.dart';
 import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dart';
 
 /// Product Details — Editorial layout following "NovaStore."
 ///
@@ -239,26 +241,44 @@ class ProductDetailsPage extends StatelessWidget {
         child: Row(
           children: [
             // Favourite (ghost-border)
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {},
-                  child: Icon(
-                    Icons.favorite_border_rounded,
-                    color: theme.colorScheme.primary,
+            BlocBuilder<FavoritesBloc, FavoritesState>(
+              builder: (context, state) {
+                final isFav = state.isFavorite(product.id);
+                return Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isFav 
+                          ? Colors.red.withValues(alpha: 0.4) 
+                          : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    color: isFav ? Colors.red.withValues(alpha: 0.1) : Colors.transparent,
                   ),
-                ),
-              ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        context.read<FavoritesBloc>().add(ToggleFavorite(product));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFav ? 'Removed from favorites' : 'Added to favorites',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: isFav ? Colors.red : theme.colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(width: 16),
             // Add to Cart (conversion CTA)
@@ -274,7 +294,7 @@ class ProductDetailsPage extends StatelessWidget {
                       content: Text('${product.name} added to cart'),
                       action: SnackBarAction(
                         label: 'View Cart',
-                        onPressed: () {},
+                        onPressed: () => context.push(AppRouter.cart),
                       ),
                     ),
                   );

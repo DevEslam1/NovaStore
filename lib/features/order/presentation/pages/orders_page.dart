@@ -43,43 +43,57 @@ class _OrdersPageState extends State<OrdersPage> {
         ),
         centerTitle: false,
       ),
-      body: BlocBuilder<OrdersBloc, OrdersState>(
-        builder: (context, state) {
-          if (state is OrdersLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: RefreshIndicator(
+        onRefresh: () async => _loadOrders(),
+        child: BlocBuilder<OrdersBloc, OrdersState>(
+          builder: (context, state) {
+            if (state is OrdersLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state is OrdersError) {
-            return Center(child: Text(state.message));
-          }
-
-          if (state is OrdersLoaded) {
-            final orders = state.orders;
-            if (orders.isEmpty) {
-              return EmptyStateWidget(
-                title: 'No orders yet',
-                message: 'Your order history will appear here. Start shopping to see your orders!',
-                icon: Icons.receipt_long_outlined,
-                actionLabel: 'Shop Now',
-                onAction: () => context.go(AppRouter.home),
+            if (state is OrdersError) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(child: Text(state.message)),
+                ),
               );
             }
 
-            return RefreshIndicator(
-              onRefresh: () async => _loadOrders(),
-              child: ListView.builder(
+            if (state is OrdersLoaded) {
+              final orders = state.orders;
+              if (orders.isEmpty) {
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height -
+                        AppBar().preferredSize.height -
+                        MediaQuery.of(context).padding.top,
+                    child: EmptyStateWidget(
+                      title: 'No orders yet',
+                      message: 'Your order history will appear here. Start shopping to see your orders!',
+                      icon: Icons.receipt_long_outlined,
+                      actionLabel: 'Shop Now',
+                      onAction: () => context.go(AppRouter.home),
+                    ),
+                  ),
+                );
+              }
+
+              return ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
                   return _OrderCard(order: orders[index]);
                 },
-              ),
-            );
-          }
+              );
+            }
 
-          return const SizedBox.shrink();
-        },
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

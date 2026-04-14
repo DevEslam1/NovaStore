@@ -115,7 +115,16 @@ class _SearchViewState extends State<SearchView> {
             if (state.products.isEmpty) {
               return _buildEmptyState();
             }
-            return _buildResultsGrid(state.products);
+            return RefreshIndicator(
+              onRefresh: () async {
+                if (_searchController.text.isNotEmpty) {
+                  context.read<ProductsBloc>().add(
+                        GetProductsRequested(searchQuery: _searchController.text),
+                      );
+                }
+              },
+              child: _buildResultsGrid(state.products),
+            );
           }
 
           return _buildInitialState();

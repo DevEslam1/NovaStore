@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     actions: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () => context.push(AppRouter.notifications),
                         icon: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(

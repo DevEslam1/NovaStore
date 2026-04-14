@@ -24,6 +24,10 @@ import '../../features/order/domain/repositories/order_repository.dart';
 import '../../features/order/data/repositories/order_repository_impl.dart';
 import '../../features/order/data/datasources/order_remote_datasource.dart';
 import '../../features/order/presentation/bloc/orders_bloc.dart';
+import '../../features/favorites/domain/repositories/favorites_repository.dart';
+import '../../features/favorites/data/repositories/favorites_repository_impl.dart';
+import '../../features/favorites/data/datasources/favorites_local_datasource.dart';
+import '../../features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../../features/profile/presentation/bloc/address_bloc.dart';
 import '../../features/profile/domain/repositories/address_repository.dart';
 import '../../features/profile/data/repositories/address_repository_impl.dart';
@@ -89,11 +93,20 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerLazySingleton<FavoritesLocalDataSource>(
+    () => FavoritesLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
+  sl.registerLazySingleton<FavoritesRepository>(
+    () => FavoritesRepositoryImpl(localDataSource: sl()),
+  );
+
   //! Features - Core & Common
   // Blocs
   sl.registerLazySingleton(() => AppConfigBloc(sharedPreferences: sl()));
   sl.registerLazySingleton(() => CartBloc(repository: sl()));
   sl.registerLazySingleton(() => OrdersBloc(repository: sl()));
+  sl.registerLazySingleton(() => FavoritesBloc(repository: sl()));
   sl.registerLazySingleton(() => AddressBloc(repository: sl()));
 
   // Repositories
@@ -114,7 +127,7 @@ Future<void> init() async {
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
-  sl.registerLazySingleton(() => NotificationService());
+  sl.registerLazySingleton(() => NotificationService(authRepository: sl()));
   sl.registerLazySingleton(() => Dio());
 
   //! External

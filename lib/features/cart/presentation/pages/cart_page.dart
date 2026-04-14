@@ -29,26 +29,34 @@ class CartPage extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: BlocBuilder<CartBloc, CartState>(
-        builder: (context, state) {
-          if (state.items.isEmpty) {
-            return EmptyStateWidget(
-              title: 'Your cart is empty',
-              message: 'Browse our curated collection to find something you love.',
-              icon: Icons.shopping_bag_outlined,
-              actionLabel: 'Explore Products',
-              onAction: () => context.go(AppRouter.home),
-            );
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final bloc = context.read<CartBloc>();
+          final future = bloc.stream.firstWhere((state) => !state.isLoading);
+          bloc.add(LoadCart());
+          await future;
+        },
+        child: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            if (state.items.isEmpty) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height -
+                      AppBar().preferredSize.height -
+                      MediaQuery.of(context).padding.top,
+                  child: EmptyStateWidget(
+                    title: 'Your cart is empty',
+                    message: 'Browse our curated collection to find something you love.',
+                    icon: Icons.shopping_bag_outlined,
+                    actionLabel: 'Explore Products',
+                    onAction: () => context.go(AppRouter.home),
+                  ),
+                ),
+              );
+            }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              final bloc = context.read<CartBloc>();
-              final future = bloc.stream.firstWhere((state) => !state.isLoading);
-              bloc.add(LoadCart());
-              await future;
-            },
-            child: Column(
+            return Column(
               children: [
                 Expanded(
                   child: ListView.builder(
@@ -62,9 +70,9 @@ class CartPage extends StatelessWidget {
                 ),
                 _OrderSummary(state: state),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -113,5 +113,18 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Stream<UserEntity?> get authStateChanges =>
       remoteDataSource.authStateChanges.map((model) => model as UserEntity?);
+
+  @override
+  Future<Either<Failure, void>> updateDeviceToken(String token) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection.'));
+    }
+    try {
+      await remoteDataSource.updateUserDeviceToken(token);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
 

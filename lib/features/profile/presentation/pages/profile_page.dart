@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/bloc/app_config_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import 'package:newstore/core/utils/firebase_seeder.dart';
@@ -29,8 +30,16 @@ class ProfilePage extends StatelessWidget {
             builder: (context, authState) {
               final user = authState is Authenticated ? authState.user : null;
 
-              return CustomScrollView(
-                slivers: [
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await FirebaseAuth.instance.currentUser?.reload();
+                  if (context.mounted) {
+                    context.read<AuthBloc>().add(AuthCheckRequested());
+                  }
+                },
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
                   // ── Profile Header with Signature Gradient ──
                   SliverAppBar(
                     expandedHeight: 240,
@@ -105,6 +114,11 @@ class ProfilePage extends StatelessWidget {
                           icon: Icons.person_outline_rounded,
                           title: 'Personal Information',
                           onTap: () => _showComingSoon(context),
+                        ),
+                        _ProfileTile(
+                          icon: Icons.favorite_border_rounded,
+                          title: 'My Favorites',
+                          onTap: () => context.push(AppRouter.favorites),
                         ),
                         _ProfileTile(
                           icon: Icons.shopping_bag_outlined,
@@ -283,6 +297,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
               );
             },
           );

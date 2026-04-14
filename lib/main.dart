@@ -15,15 +15,14 @@ import 'core/localization/app_localizations.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/bloc/app_config_bloc.dart';
 import 'features/cart/presentation/bloc/cart_bloc.dart';
+import 'features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'features/home/presentation/bloc/products_bloc.dart';
 import 'shared/widgets/network_banner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize DI
   await di.init();
@@ -48,18 +47,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => di.sl<AppConfigBloc>()..add(LoadConfig())),
+        BlocProvider(
+          create: (context) => di.sl<AppConfigBloc>()..add(LoadConfig()),
+        ),
         BlocProvider(create: (context) => di.sl<CartBloc>()..add(LoadCart())),
+        BlocProvider(create: (context) => di.sl<FavoritesBloc>()..add(LoadFavorites())),
         BlocProvider(create: (context) => di.sl<OrdersBloc>()),
         BlocProvider(
-          create: (context) => di.sl<ProductsBloc>()..add(GetProductsRequested()),
+          create: (context) =>
+              di.sl<ProductsBloc>()..add(GetProductsRequested()),
         ),
         BlocProvider(
           create: (context) => di.sl<AuthBloc>()..add(AuthCheckRequested()),
         ),
-        BlocProvider(
-          create: (context) => di.sl<AddressBloc>(),
-        ),
+        BlocProvider(create: (context) => di.sl<AddressBloc>()),
       ],
       child: BlocBuilder<AppConfigBloc, AppConfigState>(
         builder: (context, state) {
