@@ -27,19 +27,26 @@ class OrdersPage extends StatelessWidget {
       ),
       body: orders.isEmpty
           ? _buildEmptyState(theme)
-          : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                return _OrderCard(
-                  orderId: order['id'],
-                  status: order['status'],
-                  date: order['date'],
-                  itemCount: order['items'],
-                  total: order['total'],
-                );
+          : RefreshIndicator(
+              onRefresh: () async {
+                // Simulate network delay for mock data
+                await Future.delayed(const Duration(seconds: 1));
               },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(), // Important for short lists
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  return _OrderCard(
+                    orderId: order['id'],
+                    status: order['status'],
+                    date: order['date'],
+                    itemCount: order['items'],
+                    total: order['total'],
+                  );
+                },
+              ),
             ),
     );
   }

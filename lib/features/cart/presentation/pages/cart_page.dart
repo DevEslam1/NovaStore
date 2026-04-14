@@ -77,20 +77,28 @@ class CartPage extends StatelessWidget {
             );
           }
 
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-                  itemCount: state.items.length,
-                  itemBuilder: (context, index) {
-                    final item = state.items[index];
-                    return _CartItemTile(item: item);
-                  },
+          return RefreshIndicator(
+            onRefresh: () async {
+              final bloc = context.read<CartBloc>();
+              bloc.add(LoadCart());
+              // Wait for loading to finish
+              await bloc.stream.firstWhere((state) => !state.isLoading);
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                    itemCount: state.items.length,
+                    itemBuilder: (context, index) {
+                      final item = state.items[index];
+                      return _CartItemTile(item: item);
+                    },
+                  ),
                 ),
-              ),
-              _OrderSummary(state: state),
-            ],
+                _OrderSummary(state: state),
+              ],
+            ),
           );
         },
       ),

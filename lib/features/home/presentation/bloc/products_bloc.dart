@@ -11,6 +11,7 @@ abstract class ProductsEvent extends Equatable {
 }
 
 class GetProductsRequested extends ProductsEvent {}
+class RefreshProductsRequested extends ProductsEvent {}
 
 // States
 abstract class ProductsState extends Equatable {
@@ -46,6 +47,17 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       if (state is ProductsLoaded || state is ProductsLoading) return;
       
       emit(ProductsLoading());
+      final result = await getProductsUseCase();
+      result.fold(
+        (failure) => emit(ProductsError(failure.message)),
+        (products) => emit(ProductsLoaded(products)),
+      );
+    });
+
+    on<RefreshProductsRequested>((event, emit) async {
+      // Don't emit Loading state here to avoid total screen flicker if desired,
+      // but for RefreshIndicator, we just need to return a future.
+      // However, to keep it simple and consistent:
       final result = await getProductsUseCase();
       result.fold(
         (failure) => emit(ProductsError(failure.message)),

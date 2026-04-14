@@ -50,8 +50,16 @@ class HomePage extends StatelessWidget {
             final flashDeals = allProducts.take(3).toList();
             final recommended = allProducts.skip(3).toList();
 
-            return CustomScrollView(
-              slivers: [
+            return RefreshIndicator(
+              onRefresh: () async {
+                final bloc = context.read<ProductsBloc>();
+                bloc.add(RefreshProductsRequested());
+                // Wait for the next state that isn't loading (or just wait for one state change)
+                await bloc.stream.firstWhere((state) => state is ProductsLoaded || state is ProductsError);
+              },
+              displacement: 100, // Account for the expanded app bar
+              child: CustomScrollView(
+                slivers: [
                 // ── Glassmorphic App Bar ──
                 SliverAppBar(
                   floating: true,
@@ -332,8 +340,9 @@ class HomePage extends StatelessWidget {
 
                 const SliverToBoxAdapter(child: SizedBox(height: 120)),
               ],
-            );
-          }
+            ),
+          );
+        }
 
           return const SizedBox.shrink();
         },

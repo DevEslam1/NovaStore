@@ -9,7 +9,7 @@ abstract class CartLocalDataSource {
   Future<void> clearCart();
 }
 
-const CACHED_CART = 'CACHED_CART';
+const kCachedCart = 'CACHED_CART';
 
 class CartLocalDataSourceImpl implements CartLocalDataSource {
   final SharedPreferences sharedPreferences;
@@ -23,14 +23,14 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
         .toList();
     
     return sharedPreferences.setString(
-      CACHED_CART,
+      kCachedCart,
       json.encode(cartJson),
     );
   }
 
   @override
   Future<List<CartItemModel>> getCachedCart() {
-    final jsonString = sharedPreferences.getString(CACHED_CART);
+    final jsonString = sharedPreferences.getString(kCachedCart);
     if (jsonString != null) {
       final List<dynamic> decodedJson = json.decode(jsonString);
       return Future.value(
@@ -43,6 +43,6 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
 
   @override
   Future<void> clearCart() {
-    return sharedPreferences.remove(CACHED_CART);
+    return sharedPreferences.remove(kCachedCart);
   }
 }
