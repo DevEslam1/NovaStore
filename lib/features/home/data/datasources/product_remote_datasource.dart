@@ -42,11 +42,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           .collection(ApiEndpoints.products);
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        // Firestore requires the first orderBy to match an inequality filter field
-        query = query
-            .where('name', isGreaterThanOrEqualTo: searchQuery)
-            .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff')
-            .orderBy('name');
+        // We remove the restrictive Firestore prefix matching (startsWith).
+        // Instead, we fetch products from the database and will apply our 
+        // advanced local search algorithm in the repository to support 
+        // substring matching and weighted ranking across title and description.
+        query = query.orderBy('name');
       } else if (category != null && category.isNotEmpty) {
         query = query.where('category', isEqualTo: category);
         // By omitting orderBy('createdAt') here, we bypass the need for a 

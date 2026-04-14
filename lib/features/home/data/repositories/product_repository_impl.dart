@@ -7,6 +7,8 @@ import 'package:newstore/core/error/failures.dart';
 import 'package:newstore/core/error/exceptions.dart';
 import 'package:newstore/core/network/network_info.dart';
 
+import 'package:newstore/core/utils/search_algorithm.dart';
+
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
   final NetworkInfo networkInfo;
@@ -27,14 +29,26 @@ class ProductRepositoryImpl implements ProductRepository {
       return const Left(NetworkFailure('No internet connection.'));
     }
     try {
+      // If we're searching, we fetch a larger batch to allow our 
+      // advanced ranking algorithm to work effectively on a wider dataset.
+      final fetchLimit = (searchQuery != null && searchQuery.isNotEmpty) ? 50 : limit;
+
       final paginatedProducts = await remoteDataSource.getProducts(
-        limit: limit,
+        limit: fetchLimit,
         lastDoc: lastDoc,
         category: category,
         searchQuery: searchQuery,
       );
+
+      List<Product> products = paginatedProducts.products;
+
+      // Apply our advanced weighted search algorithm locally
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        products = SearchAlgorithm.filterAndRank(products, searchQuery);
+      }
+
       return Right(PaginatedProductsResult(
-        products: paginatedProducts.products,
+        products: products,
         lastDoc: paginatedProducts.lastDoc,
         hasMore: paginatedProducts.hasMore,
       ));
