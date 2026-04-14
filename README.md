@@ -6,8 +6,9 @@
 
 ---
 
-## 💎 Design Philosophy & UI
+## 💎 Brand Identity & Design
 NovaStore prioritizes a **Premium Visual Identity** through:
+- **Centralized Branding**: New high-resolution app icon and multi-variant logos (Dark/Light).
 - **Glassmorphism**: Elegant blur effects and translucent backgrounds inspired by modern UI trends.
 - **Tonal Layering**: Harmonious color palettes that adapt dynamically to user preferences.
 - **Micro-Animations**: Fluid transitions and hover effects that make the app feel alive.
@@ -15,48 +16,49 @@ NovaStore prioritizes a **Premium Visual Identity** through:
 
 ## 🚀 Key Modules & Features
 
-### 1. 🌈 Onboarding Experience
-- High-fidelity animated landing screens.
-- Smooth transition into the authentication flow.
-- "Remember Me" logic for returning users.
+### 1. 🌈 Onboarding & Splash
+- **Brand Splash**: Premium animated entry point showing the new NovaStore logo.
+- **High-Fidelity Onboarding**: Animated landing screens to guide new users.
+- **Remember Me**: Intelligent session persistence for returning users.
 
 ### 2. 🔐 Authentication Center
 - **Firebase Auth**: Secure email/password login and registration.
+- **OTP Verification**: Secure one-time password flow for account validation.
 - **Guest Access**: Seamless "Continue as Guest" flow for friction-less browsing.
-- **Auth Persistence**: Automatic session management that remembers your security state.
+- **Auth Persistence**: Automatic session management.
 
 ### 3. 🏠 Discovery Dashboard (Home)
 - **Hero Banners**: Vibrant promotional carousels for new collections.
-- **Category Explorer**: Icon-based chips for quick navigation (Fashion, Electronics, etc.).
+- **Category Explorer**: Icon-based chips for quick navigation.
 - **Flash Deals**: Time-sensitive product spotlights with specialized pricing.
 - **Recommended for You**: Personalized product grids based on curated algorithms.
 - **Pull-to-Refresh**: Instant data synchronization across the dashboard.
 
-### 4. 🔍 Premium Search Utility
+### 4. 🔍 Premium Search & Discovery
 - **Real-Time Results**: Dynamic filtering as you type.
-- **Search History**: Convenient access to your recent queries.
-- **Filtered Navigation**: Drill down by category or price point directly from search.
+- **Advanced Filtering**: Modal-based filter utility to drill down by category, price, or brand.
+- **Search History**: Convenient access to recent queries.
 
 ### 5. 📦 Product Studio
 - **High-Res Imagery**: Support for networked carousels with cached loading.
 - **Spec Details**: Detailed descriptions, size selections, and variant options.
-- **Related Products**: Smart recommendations to keep users engaged.
-- **Tonal Design**: Individual product pages use the design system's tonal layering to spotlight content.
+- **Shimmer Skeletons**: Premium loading states using the `shimmer` package for smooth content arrival.
+- **Tonal Design**: Individual product pages use tonal layering to spotlight content.
 
 ### 6. 🛒 Cart & Checkout
 - **Fluid Item Management**: Slide-to-delete cards and intuitive quantity controls.
 - **Glassmorphic Summary**: Transparent checkout card showing subtotal, shipping, and taxes.
-- **Streamlined Flow**: Preparation for full payment integration (Stripe/Apple Pay).
+- **Streamlined Flow**: Preparation for full payment integration.
 
 ### 7. 📦 Order Management
 - **Lifecycle Tracking**: Monitor orders from *Confirmed* to *Delivered*.
 - **Order History**: Comprehensive list of past purchases with status badges.
-- **Detailed Tracking**: timeline-based view for shipping progress.
+- **Detailed Tracking**: Timeline-based view for shipping progress.
 
 ### 8. 👤 Profile & Personalization
 - **Triple-Theme Engine**: Toggle between **System**, **Light**, and **Dark** modes with persistent storage.
+- **Asset Management**: Centralized `AppAssets` utility for optimized image and logo handling.
 - **Developer Tools**: Gated utility section for seeding Firestore with mock product catalogs.
-- **Address Management**: Preview and manage saved shipping locations.
 
 ---
 
