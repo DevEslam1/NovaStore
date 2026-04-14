@@ -8,11 +8,12 @@
 
 ## 💎 Brand Identity & Design
 NovaStore prioritizes a **Premium Visual Identity** through:
-- **Centralized Branding**: New high-resolution app icon and multi-variant logos (Dark/Light).
-- **Glassmorphism**: Elegant blur effects and translucent backgrounds inspired by modern UI trends.
-- **Tonal Layering**: Harmonious color palettes that adapt dynamically to user preferences.
-- **Micro-Animations**: Fluid transitions and hover effects that make the app feel alive.
-- **Modern Typography**: Curated font pairings (Outfit/Inter) for maximum readability and brand distinction.
+- **Centralized Branding**: New high-resolution app icon (Adaptive for Android/iOS) and multi-variant logos.
+- **Ethereal Commerce Design**: Implementation of the Stitch-based design system featuring gradient headers and pill-shaped components.
+- **Glassmorphism**: Elegant blur effects and translucent backgrounds (`BackdropFilter`) inspired by modern UI trends.
+- **Tonal Layering**: Harmonious color palettes (SecondaryContainer, SurfaceContainer) that adapt dynamically to dark/light modes.
+- **Micro-Animations**: Fluid transitions and hover effects using `AnimatedContainer` and standard Flutter animations.
+- **Modern Typography**: Pairings of **Outfit** (Headlines) and **Inter** (Body) for a premium editorial feel.
 
 ## 🚀 Key Modules & Features
 
@@ -22,10 +23,11 @@ NovaStore prioritizes a **Premium Visual Identity** through:
 - **Remember Me**: Intelligent session persistence for returning users.
 
 ### 2. 🔐 Authentication Center
-- **Firebase Auth**: Secure email/password login and registration.
-- **OTP Verification**: Secure one-time password flow for account validation.
-- **Guest Access**: Seamless "Continue as Guest" flow for friction-less browsing.
-- **Auth Persistence**: Automatic session management.
+- **Dual-Mode Login**: Seamlessly toggle between **Email** and **Phone** authentication.
+- **Phone Auth (OTP)**: Secure Firebase-backed phone verification flow with a specialized PIN entry screen.
+- **OTP Verification**: Multi-purpose validation flow (Email/Phone) with countdown timers and resend logic.
+- **Guest Access**: Friction-less "Continue as Guest" entry for immediate browsing.
+- **Auth Persistence**: Automatic session management and redirection via `GoRouter` refresh streams.
 
 ### 3. 🏠 Discovery Dashboard (Home)
 - **Hero Banners**: Vibrant promotional carousels for new collections.
@@ -75,10 +77,10 @@ The project follows a strict **Clean Architecture** pattern to ensure decoupling
 - **Backend (mBaaS)**: Firebase (Authentication, Firestore, Storage)
 - **State management**: `flutter_bloc` & `equatable`
 - **Dependency Injection**: `get_it`
-- **Routing**: `go_router` (Declarative path-based navigation)
-- **Storage**: `shared_preferences`
-- **Networking**: `Dio` (with custom interceptors)
-- **Visuals**: `google_fonts`, `flutter_svg`, `cached_network_image`
+- **Routing**: `go_router` (Declarative path-based navigation with argument passing)
+- **Local Storage**: `shared_preferences` & `path_provider`
+- **Analytics & Icons**: `flutter_launcher_icons`
+- **Visuals**: `google_fonts`, `flutter_svg`, `cached_network_image`, `pin_code_fields`, `shimmer`
 
 ---
 

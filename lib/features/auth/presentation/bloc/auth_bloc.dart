@@ -40,6 +40,26 @@ class AuthSignUpRequested extends AuthEvent {
   List<Object?> get props => [email, password, name];
 }
 
+class AuthPhoneSignInRequested extends AuthEvent {
+  final String phoneNumber;
+  const AuthPhoneSignInRequested(this.phoneNumber);
+  @override
+  List<Object?> get props => [phoneNumber];
+}
+
+class AuthOtpVerificationRequested extends AuthEvent {
+  final String verificationId;
+  final String smsCode;
+  final String phoneNumber;
+  const AuthOtpVerificationRequested({
+    required this.verificationId,
+    required this.smsCode,
+    required this.phoneNumber,
+  });
+  @override
+  List<Object?> get props => [verificationId, smsCode, phoneNumber];
+}
+
 
 // States
 abstract class AuthState extends Equatable {
@@ -57,6 +77,14 @@ class Authenticated extends AuthState {
   const Authenticated(this.user);
   @override
   List<Object?> get props => [user];
+}
+
+class AuthOtpSent extends AuthState {
+  final String verificationId;
+  final String phoneNumber;
+  const AuthOtpSent({required this.verificationId, required this.phoneNumber});
+  @override
+  List<Object?> get props => [verificationId, phoneNumber];
 }
 
 class Unauthenticated extends AuthState {}
@@ -79,6 +107,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignInAsGuestRequested>(_onAuthSignInAsGuestRequested);
     on<AuthSignOutRequested>(_onAuthSignOutRequested);
     on<AuthSignUpRequested>(_onAuthSignUpRequested);
+    on<AuthPhoneSignInRequested>(_onAuthPhoneSignInRequested);
+    on<AuthOtpVerificationRequested>(_onAuthOtpVerificationRequested);
 
 
     _authSubscription = authRepository.authStateChanges.distinct().listen((user) {
@@ -135,6 +165,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       event.password,
       event.name,
     );
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(Authenticated(user)),
+    );
+  }
+
+  Future<void> _onAuthPhoneSignInRequested(AuthPhoneSignInRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final result = await authRepository.signInWithPhone(event.phoneNumber);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (verificationId) => emit(AuthOtpSent(verificationId: verificationId, phoneNumber: event.phoneNumber)),
+    );
+  }
+
+  Future<void> _onAuthOtpVerificationRequested(AuthOtpVerificationRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final result = await authRepository.verifyOtp(event.verificationId, event.smsCode);
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(Authenticated(user)),

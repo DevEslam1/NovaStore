@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../../../../core/error/exceptions.dart';
@@ -5,6 +6,8 @@ import '../../../../core/error/exceptions.dart';
 abstract class FirebaseAuthDataSource {
   Future<UserModel> signInWithEmailPassword(String email, String password);
   Future<UserModel> signUpWithEmailPassword(String email, String password, String name);
+  Future<String> verifyPhoneNumber(String phoneNumber);
+  Future<UserModel> signInWithOtp(String verificationId, String smsCode);
   Future<void> signOut();
   Future<UserModel> signInAnonymously();
   UserModel? getCurrentUser();
@@ -77,6 +80,58 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   UserModel? getCurrentUser() {
     final user = firebaseAuth.currentUser;
     return user != null ? UserModel.fromFirebaseUser(user) : null;
+  }
+
+  @override
+  Future<String> verifyPhoneNumber(String phoneNumber) async {
+    final Completer<String> completer = Completer<String>();
+
+    try {
+      await firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Automatic verification or instant verification.
+          // For now, we'll let the user enter the code manually or handled by callbacks.
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (!completer.isCompleted) {
+            completer.completeError(AuthException(e.message ?? 'Verification failed'));
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (!completer.isCompleted) {
+            completer.complete(verificationId);
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (!completer.isCompleted) {
+            completer.complete(verificationId);
+          }
+        },
+      );
+      return completer.future;
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> signInWithOtp(String verificationId, String smsCode) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      final userCredential = await firebaseAuth.signInWithCredential(credential);
+      if (userCredential.user == null) {
+        throw const AuthException('Failed to sign in with OTP.');
+      }
+      return UserModel.fromFirebaseUser(userCredential.user!);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e.message ?? 'Invalid verification code.');
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
   }
 
   @override

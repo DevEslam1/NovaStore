@@ -81,6 +81,36 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, String>> signInWithPhone(String phoneNumber) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection.'));
+    }
+    try {
+      final verificationId = await remoteDataSource.verifyPhoneNumber(phoneNumber);
+      return Right(verificationId);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> verifyOtp(String verificationId, String smsCode) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection.'));
+    }
+    try {
+      final userModel = await remoteDataSource.signInWithOtp(verificationId, smsCode);
+      return Right<Failure, UserEntity>(userModel);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Stream<UserEntity?> get authStateChanges =>
       remoteDataSource.authStateChanges.map((model) => model as UserEntity?);
 }

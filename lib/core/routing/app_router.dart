@@ -83,8 +83,11 @@ class AppRouter {
       GoRoute(
         path: otp,
         builder: (context, state) {
-          final email = state.extra as String? ?? '';
-          return OtpPage(email: email);
+          final args = state.extra as Map<String, dynamic>?;
+          return OtpPage(
+            email: args?['email'] as String? ?? (args?['phoneNumber'] as String? ?? ''),
+            verificationId: args?['verificationId'] as String?,
+          );
         },
       ),
       GoRoute(

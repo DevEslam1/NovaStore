@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "658125819028",
+    "firebase_url": "https://novastore-3739b-default-rtdb.firebaseio.com",
     "project_id": "novastore-3739b",
     "storage_bucket": "novastore-3739b.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.newstore"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "658125819028-hu5h4lmgbbmgc42t6618f50bg6jsroca.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.newstore",
+            "certificate_hash": "9c54b82ec06ce7fda868f85d75722f9b6294c61c"
+          }
+        },
+        {
+          "client_id": "658125819028-lerler0jrcbu1u56epdnl1ns8u4e7o22.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDM4Z_0YSDdDc3DbH6lk8ZWlYV5uHCzFRw"
@@ -20,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "658125819028-lerler0jrcbu1u56epdnl1ns8u4e7o22.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "658125819028-mut29ae3hnmvjmbgmajkj27k89g64fcl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newstore"
+              }
+            }
+          ]
         }
       }
     }

@@ -90,7 +90,7 @@
 
 --- -->
 
-## Phase 3 — Missing Screens (Make It Complete)
+<!-- ## Phase 3 — Missing Screens (Make It Complete)
 
 ### 3.1 Splash Screen
 
@@ -143,7 +143,7 @@
 - [ ] Show skeleton while ProductsBloc is in loading state
 - [ ] Add skeleton states to orders, profile, and cart pages
 
----
+--- -->
 
 ## Phase 4 — Production Ready (Make It Polish)
 

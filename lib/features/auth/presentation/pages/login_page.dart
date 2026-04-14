@@ -20,11 +20,14 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isPhoneLogin = false;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -42,6 +45,11 @@ class _LoginPageState extends State<LoginPage> {
               behavior: SnackBarBehavior.floating,
             ),
           );
+        } else if (state is AuthOtpSent) {
+          context.push('/otp', extra: {
+            'verificationId': state.verificationId,
+            'phoneNumber': state.phoneNumber,
+          });
         }
       },
       builder: (context, state) {
@@ -136,70 +144,152 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     const SizedBox(height: 36),
+                    
+                    // Auth Method Toggle
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => _isPhoneLogin = false),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: !_isPhoneLogin ? theme.colorScheme.surface : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Email',
+                                  style: TextStyle(
+                                    fontWeight: !_isPhoneLogin ? FontWeight.bold : FontWeight.normal,
+                                    color: !_isPhoneLogin ? theme.colorScheme.primary : theme.colorScheme.outline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => _isPhoneLogin = true),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: _isPhoneLogin ? theme.colorScheme.surface : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Phone',
+                                  style: TextStyle(
+                                    fontWeight: _isPhoneLogin ? FontWeight.bold : FontWeight.normal,
+                                    color: _isPhoneLogin ? theme.colorScheme.primary : theme.colorScheme.outline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
 
                     // Form fields
-                    CustomTextField(
-                      label: 'Email Address',
-                      hint: 'enter your email',
-                      controller: _emailController,
-                      prefixIcon: Icon(
-                        Icons.email_outlined,
-                        color: theme.colorScheme.outline,
-                        size: 20,
+                    if (!_isPhoneLogin) ...[
+                      CustomTextField(
+                        label: 'Email Address',
+                        hint: 'enter your email',
+                        controller: _emailController,
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: theme.colorScheme.outline,
+                          size: 20,
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Email is required';
+                          return null;
+                        },
                       ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Email is required';
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    CustomTextField(
-                      label: 'Password',
-                      hint: 'enter your password',
-                      isPassword: true,
-                      controller: _passwordController,
-                      prefixIcon: Icon(
-                        Icons.lock_outline_rounded,
-                        color: theme.colorScheme.outline,
-                        size: 20,
+                      const SizedBox(height: 24),
+                      CustomTextField(
+                        label: 'Password',
+                        hint: 'enter your password',
+                        isPassword: true,
+                        controller: _passwordController,
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          color: theme.colorScheme.outline,
+                          size: 20,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password is required';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: theme.colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
+                    ] else ...[
+                      CustomTextField(
+                        label: 'Phone Number',
+                        hint: '+1 234 567 8900',
+                        controller: _phoneController,
+                        prefixIcon: Icon(
+                          Icons.phone_android_rounded,
+                          color: theme.colorScheme.outline,
+                          size: 20,
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Phone number is required';
+                          return null;
+                        },
+                      ),
+                    ],
+                    if (!_isPhoneLogin)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              color: theme.colorScheme.secondary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
                     const SizedBox(height: 28),
 
                     // CTA buttons
                     CustomButton(
-                      text: 'Sign In',
+                      text: _isPhoneLogin ? 'Send Code' : 'Sign In',
                       isLoading: isLoading,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(
-                                AuthSignInRequested(
-                                  _emailController.text.trim(),
-                                  _passwordController.text,
-                                ),
-                              );
+                          if (_isPhoneLogin) {
+                            context.read<AuthBloc>().add(
+                                  AuthPhoneSignInRequested(
+                                    _phoneController.text.trim(),
+                                  ),
+                                );
+                          } else {
+                            context.read<AuthBloc>().add(
+                                  AuthSignInRequested(
+                                    _emailController.text.trim(),
+                                    _passwordController.text,
+                                  ),
+                                );
+                          }
                         }
                       },
                       width: double.infinity,
