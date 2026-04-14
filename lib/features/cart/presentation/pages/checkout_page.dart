@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
+import 'package:newstore/core/routing/app_router.dart';
 
 /// Checkout: Address, Delivery & Payment — "The Curated Pavilion" design.
 ///
@@ -159,73 +161,16 @@ class CheckoutPage extends StatelessWidget {
 
             const SizedBox(height: 40),
             CustomButton(
-              text: 'Place Order',
+              text: 'Continue to Payment',
               isSecondary: true,
-              icon: Icons.check_circle_outline_rounded,
+              icon: Icons.payment_rounded,
               onPressed: () {
-                _showSuccessDialog(context);
+                context.push(AppRouter.payment);
               },
               width: double.infinity,
             ),
             const SizedBox(height: 24),
           ],
-        ),
-      ),
-    );
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    final theme = Theme.of(context);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(36),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  size: 48,
-                  color: Color(0xFF10B981),
-                ),
-              ),
-              const SizedBox(height: 28),
-              Text(
-                'Order Placed!',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Your order has been placed successfully.\nWe\'ll notify you once it ships.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 32),
-              CustomButton(
-                text: 'Back to Home',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-                width: double.infinity,
-                height: 52,
-              ),
-            ],
-          ),
         ),
       ),
     );

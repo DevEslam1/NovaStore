@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:newstore/core/constants/mock_data.dart';
+import 'package:newstore/core/routing/app_router.dart';
 
 /// Orders — "The Curated Pavilion" design.
 ///
@@ -202,7 +204,16 @@ class _OrderCard extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () => context.push(
+                AppRouter.orderTracking,
+                extra: {
+                  'id': orderId,
+                  'status': status,
+                  'date': date,
+                  'total': total,
+                  'items': itemCount,
+                },
+              ),
               child: const Text('Track Order'),
             ),
           ),
