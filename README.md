@@ -1,67 +1,71 @@
 # NovaStore | Premium E-Commerce Marketplace
 
-![NovaStore Banner](assets/screenshots/onboarding.png)
+![NovaStore Banner](https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1200)
 
 ## 🌟 Overview
-**NovaStore** is a production-ready, high-end e-commerce application built with Flutter. Designed for a "Curated Boutique" experience, it features a glassmorphic UI, smooth micro-animations, and a highly scalable Clean Architecture. Developed with a focus on visual excellence and developer experience.
+**NovaStore** is a production-ready, high-end e-commerce application built with Flutter. Designed for a "Curated Boutique" experience, it features a glassmorphic UI, smooth micro-animations, and a highly scalable Clean Architecture. Powered by Firebase, it offers a seamless shopping experience with real-time data sync and robust authentication.
 
 ## ✨ Key Features
-- **Modern Design System**: Custom glassmorphism-inspired UI with vibrant gradients and premium typography.
-- **Clean Architecture**: Strictly separated Domain, Data, and Presentation layers for maximum maintainability.
-- **BLoC State Management**: Robust and predictable state handling for complex user flows.
-- **Responsive Design**: Optimized for multiple mobile screen sizes with a fluid layout.
-- **RTL Support**: Built-in support for Arabic and English localization.
-- **Search & Filtering**: Real-time search integration with category-based browsing.
-- **Advanced Checkout Flow**: Optimized path-to-purchase with saved addresses and checkout validation.
+- **Modern Design System**: Custom glassmorphism-inspired UI with tonal layering, vibrant gradients, and premium typography (Outfit/Inter).
+- **Firebase Integration**: Real-time product catalog via Firestore and secure user management with Firebase Authentication (including Guest Mode).
+- **Dynamic Theme Management**: Persistent support for **System**, **Light**, and **Dark** modes with seamless transitions.
+- **Clean Architecture**: Strictly separated Domain, Data, and Presentation layers for maximum maintainability and testability.
+- **BLoC State Management**: Robust and predictable state handling using `flutter_bloc`.
+- **Pull-to-Refresh**: Enhanced UX with manual data synchronization on Home, Cart, and Orders pages.
+- **Developer Tools**: Integrated seeding utility to quickly populate Firestore with curated mock data.
+- **RTL & Localization**: Built-in support for multiple languages (English/Arabic) using a custom JSON-based L10n system.
 
-## 📸 Screenshots
-
-| Onboarding & Brand | Dashboard |
+## 📸 Experience
+| Visual Harmony | Fluid Navigation |
 | :---: | :---: |
-| ![Onboarding](assets/screenshots/onboarding.png) | ![Home](assets/screenshots/home.png) |
-
-| Product Details | Checkout Experience |
-| :---: | :---: |
-| ![Details](assets/screenshots/details.png) | ![Checkout](assets/screenshots/checkout.png) |
+| ![Design](https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=400) | ![UX](https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&q=80&w=400) |
 
 ## 🛠 Tech Stack
 - **Core**: Flutter / Dart
-- **State Management**: flutter_bloc (v9.1+)
-- **Routing**: go_router (Declarative navigation)
-- **Dependency Injection**: get_it (v9.2+)
-- **Networking**: Dio
-- **Storage**: shared_preferences
-- **Localization**: Custom JSON-based L10n system
+- **Backend**: Firebase (Core, Auth, Firestore, Storage)
+- **State Management**: `flutter_bloc`
+- **Routing**: `go_router` (Declarative navigation)
+- **Dependency Injection**: `get_it`
+- **Storage**: `shared_preferences` (for theme and local config)
+- **Networking**: `Dio` (for external API integrations)
+- **UI & Animation**: `google_fonts`, `flutter_svg`, `cached_network_image`
 
 ## 📂 Project Structure
 ```text
 lib/
-├── core/               # App-wide constants, themes, and routing
-├── features/           # Feature-first modular structure
-│   ├── home/           # Dashboard and search
-│   ├── product/        # Product catalogs and details
-│   ├── cart/           # Cart management and checkout
-│   └── auth/           # Login and onboarding
-├── shared/             # Reusable widgets and common entities
-└── main.dart           # App entry point
+├── core/               # Core infrastructure
+│   ├── bloc/           # Global BLoCs (Theme, Localization)
+│   ├── constants/      # App-wide constants (Asset paths, API keys)
+│   ├── theme/          # Premium design tokens and themes
+│   └── utils/          # Seeder, Validators, and Helpers
+├── features/           # Feature-first modular layers
+│   ├── auth/           # Login, Signup, and Guest flows
+│   ├── home/           # Dashboard, Banners, and Discovery
+│   ├── product/        # Detailed views and Catalogs
+│   ├── cart/           # Basket management and Checkout
+│   ├── orders/         # Order history and Tracking
+│   └── profile/        # User settings and Dev tools
+└── main.dart           # App entry point & Provider setup
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK (v3.11+)
-- Android Studio / VS Code with Flutter extensions
+- Flutter SDK (v3.24+)
+- A Firebase Project (configured via `flutterfire configure`)
 
 ### Installation
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/yourusername/novastore.git
    ```
-2. Fetch dependencies:
+2. **Fetch dependencies**:
    ```bash
    flutter pub get
    ```
-3. Run the application:
+3. **Setup Firebase**:
+   Ensure your `firebase_options.dart` is correctly generated and placed in `lib/`.
+4. **Run the application**:
    ```bash
    flutter run
    ```

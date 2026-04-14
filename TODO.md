@@ -94,6 +94,8 @@
 
 ### 3.1 Splash Screen
 
+      fix refreshing intactor to hide after reload screen
+
 - [ ] Create `splash_page.dart` — animated brand logo + loading
 - [ ] Check auth state on splash → route to onboarding/home/login
 - [ ] Check if onboarding was seen (SharedPreferences flag)
