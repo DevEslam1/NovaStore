@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:newstore/features/orders/presentation/bloc/orders_bloc.dart';
 import 'firebase_options.dart';
 import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import 'core/theme/app_theme.dart';
@@ -10,12 +11,11 @@ import 'core/localization/app_localizations.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/bloc/app_config_bloc.dart';
 import 'features/cart/presentation/bloc/cart_bloc.dart';
+import 'features/home/presentation/bloc/products_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
   runApp(const MyApp());
 }
@@ -28,33 +28,36 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => di.sl<AppConfigBloc>()),
-        BlocProvider(create: (context) => di.sl<CartBloc>()),
-        BlocProvider(create: (context) => di.sl<AuthBloc>()..add(AuthCheckRequested())),
+        BlocProvider(create: (context) => di.sl<CartBloc>()..add(LoadCart())),
+        BlocProvider(create: (context) => di.sl<OrdersBloc>()),
+        BlocProvider(
+          create: (context) => di.sl<ProductsBloc>()..add(GetProductsRequested()),
+        ),
+        BlocProvider(
+          create: (context) => di.sl<AuthBloc>()..add(AuthCheckRequested()),
+        ),
       ],
       child: BlocBuilder<AppConfigBloc, AppConfigState>(
         builder: (context, state) {
           return MaterialApp.router(
-            title: 'The Pavilion',
+            title: 'NovaStore',
             debugShowCheckedModeBanner: false,
-            
+
             // Localization
             locale: state.locale,
-            supportedLocales: const [
-              Locale('en', ''),
-              Locale('ar', ''),
-            ],
+            supportedLocales: const [Locale('en', ''), Locale('ar', '')],
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            
+
             // Theme
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: state.themeMode,
-            
+
             // Routing
             routerConfig: AppRouter.router,
           );

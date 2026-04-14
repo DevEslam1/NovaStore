@@ -17,6 +17,13 @@ import '../../features/home/data/repositories/product_repository_impl.dart';
 import '../../features/home/data/datasources/product_remote_datasource.dart';
 import '../../features/home/domain/usecases/get_products_usecase.dart';
 import '../../features/home/presentation/bloc/products_bloc.dart';
+import '../../features/cart/domain/repositories/cart_repository.dart';
+import '../../features/cart/data/repositories/cart_repository_impl.dart';
+import '../../features/cart/data/datasources/cart_local_datasource.dart';
+import '../../features/orders/domain/repositories/order_repository.dart';
+import '../../features/orders/data/repositories/order_repository_impl.dart';
+import '../../features/orders/data/datasources/order_remote_datasource.dart';
+import '../../features/orders/presentation/bloc/orders_bloc.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
@@ -58,10 +65,30 @@ Future<void> init() async {
     () => ProductRemoteDataSourceImpl(sl()),
   );
 
+  sl.registerLazySingleton<CartLocalDataSource>(
+    () => CartLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+
+  sl.registerLazySingleton<CartRepository>(
+    () => CartRepositoryImpl(localDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(sl()),
+  );
+
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
   //! Features - Core & Common
   // Blocs
   sl.registerLazySingleton(() => AppConfigBloc());
-  sl.registerLazySingleton(() => CartBloc());
+  sl.registerLazySingleton(() => CartBloc(repository: sl()));
+  sl.registerLazySingleton(() => OrdersBloc(repository: sl()));
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

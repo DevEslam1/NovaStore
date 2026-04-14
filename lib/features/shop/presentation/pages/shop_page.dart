@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Shop / Categories — "The Curated Pavilion" design.
+/// Shop / Categories — "NovaStore" design.
 ///
 /// Full-bleed category images with editorial overlays.
 /// No borders — imagery bleeds to edges in asymmetrical grid.

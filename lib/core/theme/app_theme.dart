@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'colors.dart';
 import 'typography.dart';
 
-/// "The Curated Pavilion" — a premium editorial design system.
+/// "NovaStore" — a premium editorial design system.
 ///
 /// Key rules from the Stitch design spec:
 ///   • No 1-px borders — boundaries come from background shifts & tonal layering.

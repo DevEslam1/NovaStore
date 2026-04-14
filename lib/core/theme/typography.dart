@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Typography tokens from the "Ethereal Commerce" / "The Curated Pavilion"
+/// Typography tokens from the "Ethereal Commerce" / "NovaStore" design system.
 /// design system.
 ///
 /// Headline / Display → Plus Jakarta Sans (tight tracking, editorial weight)

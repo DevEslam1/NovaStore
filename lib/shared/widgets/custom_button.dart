@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Premium button that follows "The Curated Pavilion" design system.
+/// Premium button that follows "NovaStore" design system.
 ///
 /// - **Primary**: Pill-shaped with a navy-to-deep-navy gradient (Signature Texture).
 /// - **Secondary (conversion)**: Coral-orange solid fill.

@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 
-/// Product Details — Editorial layout following "The Curated Pavilion."
+/// Product Details — Editorial layout following "NovaStore."
 ///
 /// Key design decisions:
 ///   • Full-bleed collapsible product image — imagery bleeds to screen edges.

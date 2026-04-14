@@ -94,7 +94,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'The Pavilion',
+                        'NovaStore',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,

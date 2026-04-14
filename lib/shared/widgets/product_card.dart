@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../domain/entities/product.dart';
 
-/// Product card matching the "Curated Pavilion" spec:
+/// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
 ///   • 24px outer radius, 12px image radius (sm nestled in md).
 ///   • 20px internal padding; imagery must "breathe."

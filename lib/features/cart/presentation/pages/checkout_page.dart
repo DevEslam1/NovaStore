@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
 import 'package:newstore/core/routing/app_router.dart';
 
-/// Checkout: Address, Delivery & Payment — "The Curated Pavilion" design.
+/// Checkout: Address, Delivery & Payment — "NovaStore" design.
 ///
 /// • Selectable cards with ghost-border when active, tonal shift.
 /// • No 1px borders — boundaries from background shifts.

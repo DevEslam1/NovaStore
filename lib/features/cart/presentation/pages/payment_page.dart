@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
 
-/// Checkout: Payment & Confirm — "The Curated Pavilion" design.
+/// Checkout: Payment & Confirm — "NovaStore" design.
 ///
 /// Matches the Stitch "Checkout: Payment & Confirm" screen:
 ///   • Step indicator at top (3 steps).

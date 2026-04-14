@@ -5,7 +5,7 @@ import 'package:newstore/core/constants/mock_data.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
 
-/// Search Results — "The Curated Pavilion" design.
+/// Search Results — "NovaStore" design.
 ///
 /// • Filled search bar using surfaceContainerHigh (not surfaceContainerLow).
 /// • Recent searches as pill chips (secondaryFixed hover state).

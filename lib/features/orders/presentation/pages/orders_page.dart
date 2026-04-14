@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:newstore/core/constants/mock_data.dart';
 import 'package:newstore/core/routing/app_router.dart';
 
-/// Orders — "The Curated Pavilion" design.
+/// Orders — "NovaStore" design.
 ///
 /// Zero-border order cards with tonal layering.
 /// Status badges with sm radius inside md card.

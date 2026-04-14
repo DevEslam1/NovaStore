@@ -1,9 +1,9 @@
-# The Pavilion | Premium E-Commerce Marketplace
+# NovaStore | Premium E-Commerce Marketplace
 
-![The Pavilion Banner](assets/screenshots/onboarding.png)
+![NovaStore Banner](assets/screenshots/onboarding.png)
 
 ## 🌟 Overview
-**The Pavilion** is a production-ready, high-end e-commerce application built with Flutter. Designed for a "Curated Boutique" experience, it features a glassmorphic UI, smooth micro-animations, and a highly scalable Clean Architecture. Developed with a focus on visual excellence and developer experience.
+**NovaStore** is a production-ready, high-end e-commerce application built with Flutter. Designed for a "Curated Boutique" experience, it features a glassmorphic UI, smooth micro-animations, and a highly scalable Clean Architecture. Developed with a focus on visual excellence and developer experience.
 
 ## ✨ Key Features
 - **Modern Design System**: Custom glassmorphism-inspired UI with vibrant gradients and premium typography.
@@ -55,7 +55,7 @@ lib/
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/the-pavilion.git
+   git clone https://github.com/yourusername/novastore.git
    ```
 2. Fetch dependencies:
    ```bash
@@ -67,4 +67,4 @@ lib/
    ```
 
 ## 📄 License
-Internal project for **The Pavilion**. All rights reserved.
+Internal project for **NovaStore**. All rights reserved.

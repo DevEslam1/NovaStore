@@ -5,7 +5,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
 
-/// Shopping Cart — "The Curated Pavilion" design.
+/// Shopping Cart — "NovaStore" design.
 ///
 /// • Tonal-layered cart items: surfaceContainerLowest on surface background.
 /// • No borders — boundaries from background shifts.

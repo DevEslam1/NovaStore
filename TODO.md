@@ -5,7 +5,7 @@
 
 ---
 
-## Phase 1 — Core Backend (Make It Work)
+<!-- ## Phase 1 — Core Backend (Make It Work)
 
 ### 1.1 Network Layer (`core/network/`)
 - [ ] Create `api_client.dart` — Dio instance with base URL, interceptors, auth token injection
@@ -45,13 +45,14 @@
 - [ ] Register all new repositories in `injection_container.dart`
 - [ ] Register all new data sources
 - [ ] Register all new use cases
-- [ ] Register all new BLoCs (AuthBloc, ProductsBloc, etc.)
+- [ ] Register all new BLoCs (AuthBloc, ProductsBloc, etc.) -->
 
 ---
 
-## Phase 2 — Data Flow (Make It Real)
+<!-- ## Phase 2 — Data Flow (Make It Real)
 
 ### 2.1 Cart Persistence
+
 - [ ] Add `hive` or `hive_flutter` package for local storage
 - [ ] Create `cart_local_datasource.dart` — save/load cart from Hive
 - [ ] Create `cart_repository.dart` — persist cart across app restarts
@@ -59,6 +60,7 @@
 - [ ] Optional: sync cart to Firestore for logged-in users
 
 ### 2.2 Order System
+
 - [ ] Create Firestore collection: `orders`
 - [ ] Create `order_entity.dart` (domain) — Order model with items, status, timestamps
 - [ ] Create `order_model.dart` (data) — Firestore mapping
@@ -70,6 +72,7 @@
 - [ ] Navigate to order success page after placing order
 
 ### 2.3 Wishlist / Favorites
+
 - [ ] Create Firestore collection: `wishlists` (or subcollection under users)
 - [ ] Create `wishlist_bloc.dart` — add/remove/check favorite status
 - [ ] Wire product details heart button to WishlistBloc
@@ -77,6 +80,7 @@
 - [ ] Show favorite indicator on product cards
 
 ### 2.4 User Profile
+
 - [ ] Create Firestore collection: `users` (profile data)
 - [ ] Create `user_repository.dart` — get/update profile
 - [ ] Create `profile_bloc.dart` — manage profile state
@@ -84,29 +88,33 @@
 - [ ] Implement "Edit Profile" screen — update name, photo
 - [ ] Implement avatar upload (Firebase Storage)
 
----
+--- -->
 
 ## Phase 3 — Missing Screens (Make It Complete)
 
 ### 3.1 Splash Screen
+
 - [ ] Create `splash_page.dart` — animated brand logo + loading
 - [ ] Check auth state on splash → route to onboarding/home/login
 - [ ] Check if onboarding was seen (SharedPreferences flag)
 - [ ] Add route in `app_router.dart`, set as initial
 
 ### 3.2 Sign Up Page
+
 - [ ] Create `register_page.dart` — name, email, password, confirm password
 - [ ] Wire to AuthBloc for Firebase createUserWithEmailAndPassword
 - [ ] Add route in `app_router.dart`
 - [ ] Navigate to OTP or directly to home after sign up
 
 ### 3.3 OTP Verification Page
+
 - [ ] Create `otp_page.dart` — 4-6 digit code input with auto-focus
 - [ ] Implement email verification or phone OTP via Firebase
 - [ ] Add resend timer countdown
 - [ ] Add route in `app_router.dart`
 
 ### 3.4 Filter Modal
+
 - [ ] Create `filter_modal.dart` — bottom sheet with:
   - [ ] Price range slider
   - [ ] Category chips
@@ -117,6 +125,7 @@
 - [ ] Add filter button to search page and shop page
 
 ### 3.5 Order Tracking Page
+
 - [ ] Create `order_tracking_page.dart` — stepper/timeline UI
 - [ ] Show order status: Confirmed → Processing → Shipped → Delivered
 - [ ] Show estimated delivery date
@@ -125,6 +134,7 @@
 - [ ] Wire "Track Order" button in `OrdersPage`
 
 ### 3.6 Loading Skeletons
+
 - [ ] Add `shimmer` package
 - [ ] Create `product_card_skeleton.dart` — shimmer placeholder
 - [ ] Create `home_skeleton.dart` — full home page loading state
@@ -136,6 +146,7 @@
 ## Phase 4 — Production Ready (Make It Polish)
 
 ### 4.1 State Persistence
+
 - [ ] Save theme preference to SharedPreferences
 - [ ] Load theme preference on app start in `AppConfigBloc`
 - [ ] Save language preference to SharedPreferences
@@ -143,6 +154,7 @@
 - [ ] Save "onboarding seen" flag — skip onboarding on subsequent launches
 
 ### 4.2 Address Management
+
 - [ ] Create `address_entity.dart` — address model
 - [ ] Create `addresses_page.dart` — list saved addresses
 - [ ] Create `add_address_page.dart` — form to add new address
@@ -150,6 +162,7 @@
 - [ ] Wire checkout page to select from saved addresses
 
 ### 4.3 Payment Integration
+
 - [ ] Choose payment provider (Stripe recommended)
 - [ ] Add `flutter_stripe` package
 - [ ] Create payment sheet flow in checkout
@@ -157,6 +170,7 @@
 - [ ] Store payment method tokens securely
 
 ### 4.4 Push Notifications
+
 - [ ] Add `firebase_messaging` package
 - [ ] Configure FCM in Android/iOS
 - [ ] Create notification service
@@ -164,6 +178,7 @@
 - [ ] Handle notification taps (deep link to order)
 
 ### 4.5 Error & Empty States
+
 - [ ] Create `error_widget.dart` — reusable error display with retry button
 - [ ] Create `empty_state_widget.dart` — reusable empty state
 - [ ] Add pull-to-refresh on all list pages
@@ -171,6 +186,7 @@
 - [ ] Add retry logic on failed API calls
 
 ### 4.6 Performance & Analytics
+
 - [ ] Add `firebase_analytics` — screen tracking, event logging
 - [ ] Add `firebase_crashlytics` — crash reporting
 - [ ] Implement product list pagination (infinite scroll)
@@ -179,6 +195,7 @@
 - [ ] Configure native splash screen (`flutter_native_splash`)
 
 ### 4.7 Testing
+
 - [ ] Unit tests for all BLoCs
 - [ ] Unit tests for repositories
 - [ ] Unit tests for use cases
@@ -247,21 +264,21 @@ lib/
 
 ```yaml
 # Phase 1
-cloud_firestore: ^5.x.x        # Firestore database
-firebase_storage: ^12.x.x      # Image uploads
+cloud_firestore: ^5.x.x # Firestore database
+firebase_storage: ^12.x.x # Image uploads
 
 # Phase 2
-hive: ^4.x.x                   # Local storage
-hive_flutter: ^2.x.x           # Flutter Hive adapter
+hive: ^4.x.x # Local storage
+hive_flutter: ^2.x.x # Flutter Hive adapter
 
 # Phase 3
-shimmer: ^3.x.x                # Loading skeletons
-pin_code_fields: ^8.x.x        # OTP input
+shimmer: ^3.x.x # Loading skeletons
+pin_code_fields: ^8.x.x # OTP input
 
 # Phase 4
-flutter_stripe: ^11.x.x        # Payment processing
-firebase_messaging: ^15.x.x    # Push notifications
-firebase_analytics: ^11.x.x    # Analytics
-firebase_crashlytics: ^4.x.x   # Crash reporting
-flutter_native_splash: ^2.x.x  # Native splash screen
+flutter_stripe: ^11.x.x # Payment processing
+firebase_messaging: ^15.x.x # Push notifications
+firebase_analytics: ^11.x.x # Analytics
+firebase_crashlytics: ^4.x.x # Crash reporting
+flutter_native_splash: ^2.x.x # Native splash screen
 ```

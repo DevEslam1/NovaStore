@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:newstore/core/localization/app_localizations.dart';
 import '../bloc/products_bloc.dart';
 
-/// Home & Discovery screen following the "Curated Pavilion" design system.
+/// Home & Discovery screen following the "NovaStore" design system.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

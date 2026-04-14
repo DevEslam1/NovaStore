@@ -5,7 +5,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../bloc/auth_bloc.dart';
 
-/// Registration screen — "The Curated Pavilion" design.
+/// Registration screen — "NovaStore" design.
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -101,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'The Pavilion',
+                          'NovaStore',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w800,
@@ -122,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Welcome copy
                     Text(
-                      'Join the\nPavilion',
+                      'Join\nNovaStore',
                       style: theme.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: theme.colorScheme.onSurface,

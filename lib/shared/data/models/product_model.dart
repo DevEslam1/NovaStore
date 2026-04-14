@@ -12,9 +12,9 @@ class ProductModel extends Product {
     required super.stock,
   });
 
-  factory ProductModel.fromJson(Map<String, dynamic> json, String documentId) {
+  factory ProductModel.fromJson(Map<String, dynamic> json, [String? documentId]) {
     return ProductModel(
-      id: documentId,
+      id: documentId ?? json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
@@ -27,6 +27,7 @@ class ProductModel extends Product {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'description': description,
       'price': price,

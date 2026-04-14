@@ -5,7 +5,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../bloc/auth_bloc.dart';
 
-/// Authentication screen — "The Curated Pavilion" design.
+/// Authentication screen — "NovaStore" design.
 ///
 /// Uses tonal layering: main background = surface, input background = surfaceContainerHighest.
 /// Editorial typography with tight letter-spacing for brand headline.
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'The Pavilion',
+                          'NovaStore',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w800,

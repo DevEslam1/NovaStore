@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Order Tracking — "The Curated Pavilion" design.
+/// Order Tracking — "NovaStore" design.
 ///
 /// Matches the Stitch "Order Tracking" screen:
 ///   • Navy gradient header with order number and estimated arrival.
@@ -71,7 +71,7 @@ class OrderTrackingPage extends StatelessWidget {
                       children: [
                         // Brand
                         Text(
-                          'The Pavilion',
+                          'NovaStore',
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: Colors.white.withValues(alpha: 0.6),
                             fontWeight: FontWeight.w600,
