@@ -65,6 +65,10 @@ class AppColors {
   static const Color outlineVariant = Color(0xFFC3C6CF);
   static const Color outlineVariantDark = Color(0xFF43474E);
 
+  // ─── Status ──────────────────────────────────────────────
+  static const Color success = Color(0xFF27AE60);
+  static const Color onSuccess = Color(0xFFFFFFFF);
+
   // ─── Error ───────────────────────────────────────────────
   static const Color error = Color(0xFFBA1A1A);
   static const Color onError = Color(0xFFFFFFFF);

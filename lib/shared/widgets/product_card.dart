@@ -6,6 +6,7 @@ import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:newstore/core/theme/colors.dart';
 
 /// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
@@ -116,36 +117,101 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   // Price and Add to Cart
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '\$${product.price.toStringAsFixed(2)}',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: theme.colorScheme.secondary,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.read<CartBloc>().add(AddToCart(product));
-                          _showAddedToCartToast(context, product.name, theme);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius: BorderRadius.circular(12),
+                  BlocBuilder<CartBloc, CartState>(
+                    builder: (context, state) {
+                      final cartItem = state.items.indexWhere(
+                        (i) => i.product.id == product.id,
+                      );
+                      final isInCart = cartItem >= 0;
+                      final quantity = isInCart ? state.items[cartItem].quantity : 0;
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.secondary,
+                              letterSpacing: 0,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.add_shopping_cart_rounded,
-                            color: theme.colorScheme.onPrimary,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ],
+                          if (!isInCart)
+                            GestureDetector(
+                              onTap: () {
+                                context.read<CartBloc>().add(AddToCart(product));
+                                _showAddedToCartToast(context, product.name, theme);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Icons.add_shopping_cart_rounded,
+                                  color: theme.colorScheme.onPrimary,
+                                  size: 18,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.success,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (quantity > 1) {
+                                        context.read<CartBloc>().add(
+                                          UpdateQuantity(product.id, quantity - 1),
+                                        );
+                                      } else {
+                                        context.read<CartBloc>().add(
+                                          RemoveFromCart(product.id),
+                                        );
+                                      }
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.remove,
+                                        color: AppColors.onSuccess,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '$quantity',
+                                    style: theme.textTheme.labelLarge?.copyWith(
+                                      color: AppColors.onSuccess,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.read<CartBloc>().add(
+                                        UpdateQuantity(product.id, quantity + 1),
+                                      );
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.add,
+                                        color: AppColors.onSuccess,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -204,14 +270,14 @@ class ProductCard extends StatelessWidget {
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (ctx) => Positioned(
-        bottom: MediaQuery.of(context).padding.bottom + 100,
+        top: MediaQuery.of(context).padding.top + 16,
         left: 16,
         right: 16,
         child: FadeTransition(
           opacity: animation,
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(0, 0.5),
+              begin: const Offset(0, -0.5),
               end: Offset.zero,
             ).animate(animation),
             child: Material(
@@ -219,11 +285,11 @@ class ProductCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.inverseSurface,
+                  color: theme.colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -233,7 +299,7 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.check_circle_rounded,
-                      color: theme.colorScheme.secondary,
+                      color: AppColors.success,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -241,7 +307,7 @@ class ProductCard extends StatelessWidget {
                       child: Text(
                         '$productName added to cart',
                         style: TextStyle(
-                          color: theme.colorScheme.onInverseSurface,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),

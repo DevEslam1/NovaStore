@@ -25,13 +25,29 @@
 ## 📱 Screenshots
 
 <p align="center">
-  <img src="assets/screenshots/onboarding.png" alt="Onboarding" width="220" />
-  &nbsp;&nbsp;
-  <img src="assets/screenshots/home.png" alt="Home" width="220" />
-  &nbsp;&nbsp;
-  <img src="assets/screenshots/details.png" alt="Product Details" width="220" />
-  &nbsp;&nbsp;
-  <img src="assets/screenshots/checkout.png" alt="Checkout" width="220" />
+  <img src="assets/screenshots/home.png" alt="Home" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/home_products.png" alt="Products & Favorites" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/categories.png" alt="Categories" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/cart.png" alt="Shopping Cart" width="180" />
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/checkout.png" alt="Checkout" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/payment.png" alt="Payment" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/order_success.png" alt="Order Success" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/order_tracking.png" alt="Order Tracking" width="180" />
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/orders.png" alt="Orders" width="180" />
+  &nbsp;
+  <img src="assets/screenshots/profile.png" alt="Profile" width="180" />
 </p>
 
 ---
