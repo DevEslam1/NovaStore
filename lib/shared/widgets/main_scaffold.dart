@@ -14,6 +14,10 @@ import '../../features/shop/presentation/pages/shop_page.dart';
 ///   • Pill-shaped with a 10% outlineVariant ghost-border.
 ///   • Active state: secondary dot indicator below icon.
 ///   • Ambient shadow (40px blur, 4% on-surface).
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../features/home/presentation/bloc/products_bloc.dart';
+import '../../core/di/injection_container.dart';
+
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
 
@@ -34,79 +38,82 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
-      extendBody: true,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(999),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
-              height: 72,
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainerLowest
-                    .withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
+    return BlocProvider(
+      create: (context) => sl<ProductsBloc>()..add(GetProductsRequested()),
+      child: Scaffold(
+        body: IndexedStack(index: _currentIndex, children: _pages),
+        extendBody: true,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                height: 72,
+                decoration: BoxDecoration(
                   color: Theme.of(context)
                       .colorScheme
-                      .outlineVariant
-                      .withValues(alpha: 0.1),
-                ),
-                boxShadow: [
-                  BoxShadow(
+                      .surfaceContainerLowest
+                      .withValues(alpha: 0.85),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
                     color: Theme.of(context)
                         .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.04),
-                    blurRadius: 40,
-                    offset: const Offset(0, 8),
+                        .outlineVariant
+                        .withValues(alpha: 0.1),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    icon: Icons.home_outlined,
-                    activeIcon: Icons.home_rounded,
-                    label: 'Home',
-                    isActive: _currentIndex == 0,
-                    onTap: () => setState(() => _currentIndex = 0),
-                  ),
-                  _NavItem(
-                    icon: Icons.category_outlined,
-                    activeIcon: Icons.category_rounded,
-                    label: 'Shop',
-                    isActive: _currentIndex == 1,
-                    onTap: () => setState(() => _currentIndex = 1),
-                  ),
-                  _NavItem(
-                    icon: Icons.shopping_bag_outlined,
-                    activeIcon: Icons.shopping_bag_rounded,
-                    label: 'Cart',
-                    isActive: _currentIndex == 2,
-                    onTap: () => setState(() => _currentIndex = 2),
-                  ),
-                  _NavItem(
-                    icon: Icons.receipt_long_outlined,
-                    activeIcon: Icons.receipt_long_rounded,
-                    label: 'Orders',
-                    isActive: _currentIndex == 3,
-                    onTap: () => setState(() => _currentIndex = 3),
-                  ),
-                  _NavItem(
-                    icon: Icons.person_outline_rounded,
-                    activeIcon: Icons.person_rounded,
-                    label: 'Profile',
-                    isActive: _currentIndex == 4,
-                    onTap: () => setState(() => _currentIndex = 4),
-                  ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.04),
+                      blurRadius: 40,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _NavItem(
+                      icon: Icons.home_outlined,
+                      activeIcon: Icons.home_rounded,
+                      label: 'Home',
+                      isActive: _currentIndex == 0,
+                      onTap: () => setState(() => _currentIndex = 0),
+                    ),
+                    _NavItem(
+                      icon: Icons.category_outlined,
+                      activeIcon: Icons.category_rounded,
+                      label: 'Shop',
+                      isActive: _currentIndex == 1,
+                      onTap: () => setState(() => _currentIndex = 1),
+                    ),
+                    _NavItem(
+                      icon: Icons.shopping_bag_outlined,
+                      activeIcon: Icons.shopping_bag_rounded,
+                      label: 'Cart',
+                      isActive: _currentIndex == 2,
+                      onTap: () => setState(() => _currentIndex = 2),
+                    ),
+                    _NavItem(
+                      icon: Icons.receipt_long_outlined,
+                      activeIcon: Icons.receipt_long_rounded,
+                      label: 'Orders',
+                      isActive: _currentIndex == 3,
+                      onTap: () => setState(() => _currentIndex = 3),
+                    ),
+                    _NavItem(
+                      icon: Icons.person_outline_rounded,
+                      activeIcon: Icons.person_rounded,
+                      label: 'Profile',
+                      isActive: _currentIndex == 4,
+                      onTap: () => setState(() => _currentIndex = 4),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

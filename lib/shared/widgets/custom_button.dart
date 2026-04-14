@@ -15,6 +15,7 @@ class CustomButton extends StatefulWidget {
   final double? width;
   final double height;
   final IconData? icon;
+  final bool isLoading;
 
   const CustomButton({
     super.key,
@@ -25,6 +26,7 @@ class CustomButton extends StatefulWidget {
     this.width,
     this.height = 56,
     this.icon,
+    this.isLoading = false,
   });
 
   @override
@@ -169,6 +171,16 @@ class _CustomButtonState extends State<CustomButton>
   }
 
   Widget _buildLabel(Color color) {
+    if (widget.isLoading) {
+      return SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(
+          color: color,
+          strokeWidth: 2,
+        ),
+      );
+    }
     if (widget.icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,

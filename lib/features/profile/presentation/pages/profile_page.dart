@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/app_config_bloc.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 
-/// User Profile — "The Curated Pavilion" design.
-///
-/// • Gradient header (Signature Texture) with avatar.
-/// • Setting tiles on surfaceContainerLowest with ambient shadows.
-/// • No borders — tonal layering only.
-/// • Premium feel with generous spacing and 24px card radii.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -146,7 +141,9 @@ class ProfilePage extends StatelessWidget {
                       icon: Icons.logout_rounded,
                       title: 'Sign Out',
                       isDestructive: true,
-                      onTap: () {},
+                      onTap: () {
+                        context.read<AuthBloc>().add(AuthSignOutRequested());
+                      },
                     ),
                   ]),
                 ),

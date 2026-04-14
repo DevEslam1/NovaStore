@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'core/routing/app_router.dart';
 import 'core/localization/app_localizations.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => di.sl<AppConfigBloc>()),
         BlocProvider(create: (context) => di.sl<CartBloc>()),
+        BlocProvider(create: (context) => di.sl<AuthBloc>()..add(AuthCheckRequested())),
       ],
       child: BlocBuilder<AppConfigBloc, AppConfigState>(
         builder: (context, state) {
