@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'colors.dart';
 import 'typography.dart';
 
@@ -70,6 +71,11 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark, // Dark icons for light theme
+          statusBarBrightness: Brightness.light, // For iOS
+        ),
         titleTextStyle: TextStyle(
           fontFamily: AppTypography.headlineFont,
           fontSize: 22,
@@ -306,6 +312,11 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light, // Light icons for dark theme
+          statusBarBrightness: Brightness.dark, // For iOS
+        ),
         titleTextStyle: TextStyle(
           fontFamily: AppTypography.headlineFont,
           fontSize: 22,
@@ -339,6 +350,11 @@ class AppTheme {
           elevation: 0,
           shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          textStyle: const TextStyle(
+            fontFamily: AppTypography.bodyFont,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
@@ -350,12 +366,22 @@ class AppTheme {
           ),
           shape: const StadiumBorder(),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: const TextStyle(
+            fontFamily: AppTypography.bodyFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primaryFixedDim,
+          textStyle: const TextStyle(
+            fontFamily: AppTypography.bodyFont,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
 
@@ -410,6 +436,18 @@ class AppTheme {
         selectedItemColor: AppColors.primaryFixedDim,
         unselectedItemColor: AppColors.outlineDark,
         type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: const TextStyle(
+          fontFamily: AppTypography.bodyFont,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontFamily: AppTypography.bodyFont,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
       ),
 
       dividerTheme: DividerThemeData(
