@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/filter_modal.dart';
 
 /// Shop / Categories — "NovaStore" design.
 ///
@@ -20,6 +21,13 @@ class ShopPage extends StatelessWidget {
           ),
         ),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.tune_rounded),
+            onPressed: () => FilterModal.show(context),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: GridView.builder(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),

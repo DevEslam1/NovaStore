@@ -80,9 +80,9 @@ class CartPage extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: () async {
               final bloc = context.read<CartBloc>();
+              final future = bloc.stream.firstWhere((state) => !state.isLoading);
               bloc.add(LoadCart());
-              // Wait for loading to finish
-              await bloc.stream.firstWhere((state) => !state.isLoading);
+              await future;
             },
             child: Column(
               children: [

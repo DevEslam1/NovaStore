@@ -15,11 +15,16 @@ import '../../shared/widgets/main_scaffold.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import '../di/injection_container.dart';
 
+import 'package:newstore/features/splash/presentation/pages/splash_page.dart';
+import 'package:newstore/features/auth/presentation/pages/otp_page.dart';
+
 class AppRouter {
+  static const String splash = '/splash';
   static const String home = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
+  static const String otp = '/otp';
 
   static const String productDetails = '/product-details';
   static const String checkout = '/checkout';
@@ -28,29 +33,37 @@ class AppRouter {
   static const String orderTracking = '/order-tracking';
 
   static final GoRouter router = GoRouter(
-    initialLocation: home,
+    initialLocation: splash,
     refreshListenable: GoRouterRefreshStream(sl<AuthBloc>().stream),
     redirect: (context, state) {
       final authState = sl<AuthBloc>().state;
+      final bool onSplash = state.matchedLocation == splash;
       final bool loggingIn = state.matchedLocation == login;
       final bool registering = state.matchedLocation == register;
       final bool onOnboarding = state.matchedLocation == onboarding;
+      final bool onOtp = state.matchedLocation == otp;
 
+      // During Splash, don't redirect yet
+      if (onSplash) return null;
 
-      // Unauthenticated users can only be on login or onboarding
+      // Unauthenticated users can only be on login, onboarding, register or otp
       if (authState is Unauthenticated || authState is AuthInitial) {
-        if (!loggingIn && !onOnboarding && !registering) return login;
-        return null; // Stay where they are if they are already on login, onboarding or register
+        if (!loggingIn && !onOnboarding && !registering && !onOtp) return login;
+        return null;
       }
 
-      // Authenticated users should not see login page
+      // Authenticated users should not see login/register/otp pages
       if (authState is Authenticated) {
-        if (loggingIn) return home;
+        if (loggingIn || registering || onOtp) return home;
       }
 
       return null;
     },
     routes: [
+      GoRoute(
+        path: splash,
+        builder: (context, state) => const SplashPage(),
+      ),
       GoRoute(
         path: home,
         builder: (context, state) => const MainScaffold(),
@@ -66,6 +79,13 @@ class AppRouter {
       GoRoute(
         path: register,
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: otp,
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+          return OtpPage(email: email);
+        },
       ),
       GoRoute(
         path: checkout,

@@ -30,7 +30,7 @@ class OrdersPage extends StatelessWidget {
           : RefreshIndicator(
               onRefresh: () async {
                 // Simulate network delay for mock data
-                await Future.delayed(const Duration(seconds: 1));
+                await Future.delayed(const Duration(milliseconds: 1500));
               },
               child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(), // Important for short lists

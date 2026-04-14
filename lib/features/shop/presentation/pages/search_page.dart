@@ -4,6 +4,7 @@ import 'package:newstore/shared/domain/entities/product.dart';
 import 'package:newstore/core/constants/mock_data.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
+import '../widgets/filter_modal.dart';
 
 /// Search Results — "NovaStore" design.
 ///
@@ -46,7 +47,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         titleSpacing: 0,
         title: Padding(
-          padding: const EdgeInsets.only(right: 24),
+          padding: const EdgeInsets.only(left: 12),
           child: TextField(
             controller: _searchController,
             onChanged: _onSearch,
@@ -82,6 +83,13 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.tune_rounded),
+            onPressed: () => FilterModal.show(context),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: _searchResults.isEmpty
           ? _buildInitialOrEmptyState()
