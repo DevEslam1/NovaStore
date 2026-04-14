@@ -24,30 +24,23 @@ class NotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       log('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       log('User granted provisional permission');
     } else {
       log('User declined or has not accepted permission');
     }
 
-    // Get initial token and send to server
+    // Get initial FCM token (skipped on iOS — requires Apple Developer Account for APNS)
     try {
-      String? token;
-      if (Platform.isIOS) {
-        // On iOS, getToken() can fail if APNS token isn't ready
-        String? apnsToken = await _fcm.getAPNSToken();
-        if (apnsToken != null) {
-          token = await _fcm.getToken();
-        } else {
-          log('APNS token not yet available. FCM token will be fetched later.');
+      if (!Platform.isIOS) {
+        final token = await _fcm.getToken();
+        if (token != null) {
+          log('FCM Token: $token');
+          await _sendTokenToServer(token);
         }
       } else {
-        token = await _fcm.getToken();
-      }
-
-      if (token != null) {
-        log('FCM Token: $token');
-        await _sendTokenToServer(token);
+        log('Skipping FCM token on iOS (APNS not configured).');
       }
     } catch (e) {
       log('Error getting FCM token: $e');
@@ -96,18 +89,20 @@ class NotificationService {
   Future<void> _sendTokenToServer(String token) async {
     final result = await authRepository.updateDeviceToken(token);
     result.fold(
-      (failure) => log('Failed to update device token on server: ${failure.message}'),
+      (failure) =>
+          log('Failed to update device token on server: ${failure.message}'),
       (_) => log('Successfully updated device token on server'),
     );
   }
 
   void _handleMessage(RemoteMessage message) {
     log('Handling message: ${message.data}');
-    
+
     final data = message.data;
-    final type = data['type']?.toString().toLowerCase() ?? 
-                 data['click_action']?.toString().toLowerCase();
-    
+    final type =
+        data['type']?.toString().toLowerCase() ??
+        data['click_action']?.toString().toLowerCase();
+
     if (type == null) return;
 
     switch (type) {
