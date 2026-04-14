@@ -55,9 +55,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     });
 
     on<RefreshProductsRequested>((event, emit) async {
-      // Don't emit Loading state here to avoid total screen flicker if desired,
-      // but for RefreshIndicator, we just need to return a future.
-      // However, to keep it simple and consistent:
+      emit(ProductsLoading());
       final result = await getProductsUseCase();
       result.fold(
         (failure) => emit(ProductsError(failure.message)),
