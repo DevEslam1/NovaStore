@@ -2,57 +2,92 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/app_config_bloc.dart';
 
+/// User Profile — "The Curated Pavilion" design.
+///
+/// • Gradient header (Signature Texture) with avatar.
+/// • Setting tiles on surfaceContainerLowest with ambient shadows.
+/// • No borders — tonal layering only.
+/// • Premium feel with generous spacing and 24px card radii.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: BlocBuilder<AppConfigBloc, AppConfigState>(
         builder: (context, configState) {
           return CustomScrollView(
             slivers: [
+              // ── Profile Header with Signature Gradient ──
               SliverAppBar(
-                expandedHeight: 200,
+                expandedHeight: 240,
                 pinned: true,
+                backgroundColor: theme.colorScheme.primary,
+                surfaceTintColor: Colors.transparent,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                    color: Theme.of(context).colorScheme.primary,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.primaryContainer,
+                        ],
+                      ),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const CircleAvatar(
-                          radius: 40,
-                          backgroundImage: NetworkImage(
-                            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200',
+                        const SizedBox(height: 40),
+                        // Avatar with border ring
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.4),
+                              width: 2,
+                            ),
+                          ),
+                          child: const CircleAvatar(
+                            radius: 42,
+                            backgroundImage: NetworkImage(
+                              'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=200',
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         Text(
                           'Eslam Medhat',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           'eslam@example.com',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: Colors.white70),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+
+              // ── Settings List ──
               SliverPadding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 120),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    const _ProfileHeader(title: 'Account Settings'),
+                    _SectionTitle(title: 'Account Settings', theme: theme),
+                    const SizedBox(height: 12),
                     _ProfileTile(
-                      icon: Icons.person_outline,
+                      icon: Icons.person_outline_rounded,
                       title: 'Personal Information',
                       onTap: () {},
                     ),
@@ -62,19 +97,21 @@ class ProfilePage extends StatelessWidget {
                       onTap: () {},
                     ),
                     _ProfileTile(
-                      icon: Icons.payment_outlined,
+                      icon: Icons.payment_rounded,
                       title: 'Payment Methods',
                       onTap: () {},
                     ),
-                    const SizedBox(height: 24),
-                    const _ProfileHeader(title: 'Preferences'),
+
+                    const SizedBox(height: 28),
+                    _SectionTitle(title: 'Preferences', theme: theme),
+                    const SizedBox(height: 12),
                     _ProfileTile(
-                      icon: Icons.notifications_none,
+                      icon: Icons.notifications_none_rounded,
                       title: 'Notifications',
                       onTap: () {},
                     ),
                     _ProfileTile(
-                      icon: Icons.language_outlined,
+                      icon: Icons.language_rounded,
                       title: 'Language',
                       trailing: configState.locale.languageCode == 'en'
                           ? 'English'
@@ -82,8 +119,8 @@ class ProfilePage extends StatelessWidget {
                       onTap: () {
                         final newLocale =
                             configState.locale.languageCode == 'en'
-                            ? const Locale('ar')
-                            : const Locale('en');
+                                ? const Locale('ar')
+                                : const Locale('en');
                         context.read<AppConfigBloc>().add(
                           ChangeLocale(newLocale),
                         );
@@ -96,16 +133,19 @@ class ProfilePage extends StatelessWidget {
                       switchValue: configState.themeMode == ThemeMode.dark,
                       onSwitchChanged: (value) {
                         context.read<AppConfigBloc>().add(
-                          ToggleTheme(value ? ThemeMode.dark : ThemeMode.light),
+                          ToggleTheme(
+                            value ? ThemeMode.dark : ThemeMode.light,
+                          ),
                         );
                       },
                       onTap: () {},
                     ),
-                    const SizedBox(height: 24),
+
+                    const SizedBox(height: 28),
                     _ProfileTile(
-                      icon: Icons.logout,
+                      icon: Icons.logout_rounded,
                       title: 'Sign Out',
-                      color: Colors.red,
+                      isDestructive: true,
                       onTap: () {},
                     ),
                   ]),
@@ -119,20 +159,19 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-class _ProfileHeader extends StatelessWidget {
+class _SectionTitle extends StatelessWidget {
   final String title;
-  const _ProfileHeader({required this.title});
+  final ThemeData theme;
+  const _SectionTitle({required this.title, required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.outline,
-        ),
+    return Text(
+      title.toUpperCase(),
+      style: theme.textTheme.labelSmall?.copyWith(
+        color: theme.colorScheme.outline,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.2,
       ),
     );
   }
@@ -145,7 +184,7 @@ class _ProfileTile extends StatelessWidget {
   final bool isSwitch;
   final bool? switchValue;
   final Function(bool)? onSwitchChanged;
-  final Color? color;
+  final bool isDestructive;
   final VoidCallback onTap;
 
   const _ProfileTile({
@@ -155,36 +194,66 @@ class _ProfileTile extends StatelessWidget {
     this.isSwitch = false,
     this.switchValue,
     this.onSwitchChanged,
-    this.color,
+    this.isDestructive = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final tileColor =
+        isDestructive ? const Color(0xFFFF4444) : theme.colorScheme.primary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(16),
+        color: theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.02),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: ListTile(
-        leading: Icon(icon, color: color ?? Theme.of(context).colorScheme.primary),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: isDestructive
+                ? const Color(0xFFFF4444).withValues(alpha: 0.08)
+                : theme.colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: tileColor, size: 20),
+        ),
         title: Text(
           title,
-          style: TextStyle(color: color, fontWeight: FontWeight.w500),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isDestructive ? const Color(0xFFFF4444) : null,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         trailing: isSwitch
             ? Switch(
                 value: switchValue ?? false,
                 onChanged: onSwitchChanged,
-                activeThumbColor: Theme.of(context).colorScheme.primary,
               )
             : (trailing != null
-                  ? Text(
-                      trailing!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                    )
-                  : const Icon(Icons.chevron_right, size: 20)),
+                ? Text(
+                    trailing!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  )
+                : Icon(
+                    Icons.chevron_right_rounded,
+                    size: 20,
+                    color: theme.colorScheme.outline,
+                  )),
         onTap: isSwitch ? null : onTap,
       ),
     );

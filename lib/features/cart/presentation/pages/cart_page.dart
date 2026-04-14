@@ -5,20 +5,28 @@ import '../../../../shared/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
 
+/// Shopping Cart — "The Curated Pavilion" design.
+///
+/// • Tonal-layered cart items: surfaceContainerLowest on surface background.
+/// • No borders — boundaries from background shifts.
+/// • Quantity controls with ghost-border containers.
+/// • Coral checkout CTA.
+/// • Empty state with premium illustration feel.
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Your Cart',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
         centerTitle: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
@@ -27,18 +35,42 @@ class CartPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.outline,
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 44,
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Text(
                     'Your cart is empty',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Theme.of(context).colorScheme.outline,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onSurface,
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Browse our curated collection to find\nsomething you love.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.outline,
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  CustomButton(
+                    text: 'Explore Products',
+                    onPressed: () {},
+                    width: 200,
+                    height: 48,
                   ),
                 ],
               ),
@@ -49,7 +81,7 @@ class CartPage extends StatelessWidget {
             children: [
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
                   itemCount: state.items.length,
                   itemBuilder: (context, index) {
                     final item = state.items[index];
@@ -72,16 +104,24 @@ class _CartItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+            blurRadius: 24,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          // Product Image
+          // Product Image (sm radius inside md card)
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: item.product.imageUrl.startsWith('assets/')
@@ -105,51 +145,64 @@ class _CartItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+                  item.product.brand.toUpperCase(),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
                   item.product.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 if (item.variant != null)
-                  Text(
-                    'Variant: ${item.variant}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.outline,
-                      fontSize: 12,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Variant: ${item.variant}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 8),
                 Text(
                   '\$${item.product.price.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.secondary,
+                    letterSpacing: 0,
                   ),
                 ),
               ],
             ),
           ),
-          // Quantity Controls
-          Row(
+          // Quantity Controls (ghost-border)
+          Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _QuantityButton(
-                icon: Icons.remove,
-                onTap: () => context.read<CartBloc>().add(
-                  UpdateQuantity(item.product.id, item.quantity - 1),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  '${item.quantity}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
               _QuantityButton(
                 icon: Icons.add,
                 onTap: () => context.read<CartBloc>().add(
                   UpdateQuantity(item.product.id, item.quantity + 1),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  '${item.quantity}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              _QuantityButton(
+                icon: Icons.remove,
+                onTap: () => context.read<CartBloc>().add(
+                  UpdateQuantity(item.product.id, item.quantity - 1),
                 ),
               ),
             ],
@@ -167,15 +220,17 @@ class _QuantityButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(4),
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3)),
-          borderRadius: BorderRadius.circular(8),
+          color: theme.colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+        child: Icon(icon, size: 16, color: theme.colorScheme.primary),
       ),
     );
   }
@@ -187,16 +242,17 @@ class _OrderSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -10),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+            blurRadius: 32,
+            offset: const Offset(0, -12),
           ),
         ],
       ),
@@ -204,56 +260,89 @@ class _OrderSummary extends StatelessWidget {
         top: false,
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Subtotal',
-                  style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                ),
-                Text('\$${state.totalPrice.toStringAsFixed(2)}'),
-              ],
+            _SummaryRow(
+              label: 'Subtotal',
+              value: '\$${state.totalPrice.toStringAsFixed(2)}',
+              theme: theme,
             ),
             const SizedBox(height: 8),
+            _SummaryRow(
+              label: 'Shipping',
+              value: 'Free',
+              theme: theme,
+              isHighlighted: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Divider(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Shipping',
-                  style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                ),
-                const Text('Free'),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Divider(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
                   'Total',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 Text(
                   '\$${state.totalPrice.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
             CustomButton(
-              text: 'Checkout',
+              text: 'Proceed to Checkout',
+              isSecondary: true,
               onPressed: () => context.push(AppRouter.checkout),
               width: double.infinity,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final ThemeData theme;
+  final bool isHighlighted;
+
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+    required this.theme,
+    this.isHighlighted = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: isHighlighted
+                ? theme.colorScheme.secondary
+                : theme.colorScheme.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }

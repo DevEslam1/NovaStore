@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../domain/entities/product.dart';
 
-
+/// Product card matching the "Curated Pavilion" spec:
+///   • Zero borders, `surfaceContainerLowest` background.
+///   • 24px outer radius, 12px image radius (sm nestled in md).
+///   • 20px internal padding; imagery must "breathe."
+///   • Ambient shadow (40px blur, 4% on-surface) for elevation effect.
+///   • Tonal layering: card on surfaceContainerLow → perceived lift.
 class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
@@ -15,71 +20,109 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
-        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+              blurRadius: 40,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image with rounded corners
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: AspectRatio(
-                aspectRatio: 1,
-              child: Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  child: product.imageUrl.startsWith('assets/')
-                      ? Image.asset(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Center(
-                            child: Icon(Icons.broken_image_outlined),
-                          ),
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          ),
-                          errorWidget: (context, url, error) => const Center(
-                            child: Icon(Icons.broken_image_outlined),
-                          ),
-                        ),
+            // ── Product Image ──
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: _buildImage(theme),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            // Brand name
-            Text(
-              product.brand,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                    fontWeight: FontWeight.w600,
+            // ── Details ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Brand label
+                  Text(
+                    product.brand.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-            ),
-            const SizedBox(height: 4),
-            // Product name
-            Text(
-              product.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(height: 4),
+                  // Product name
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
-            ),
-            const SizedBox(height: 4),
-            // Price
-            Text(
-              '\$${product.price.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
+                  const SizedBox(height: 6),
+                  // Price
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.secondary,
+                      letterSpacing: 0,
+                    ),
                   ),
+                ],
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(ThemeData theme) {
+    if (product.imageUrl.startsWith('assets/')) {
+      return Image.asset(
+        product.imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _imagePlaceholder(theme),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: product.imageUrl,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Container(
+        color: theme.colorScheme.surfaceContainerHigh,
+      ),
+      errorWidget: (context, url, error) => _imagePlaceholder(theme),
+    );
+  }
+
+  Widget _imagePlaceholder(ThemeData theme) {
+    return Container(
+      color: theme.colorScheme.surfaceContainerHigh,
+      child: Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: theme.colorScheme.outline,
+          size: 32,
         ),
       ),
     );

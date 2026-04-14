@@ -6,6 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 
+/// Product Details — Editorial layout following "The Curated Pavilion."
+///
+/// Key design decisions:
+///   • Full-bleed collapsible product image — imagery bleeds to screen edges.
+///   • Asymmetrical spacing (editorial look).
+///   • Limited Edition tag with sm radius inside card.
+///   • Feature tiles with checked icons.
+///   • Bottom bar: ghost-border favorite button + coral "Add to Cart" CTA.
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
 
@@ -13,61 +21,94 @@ class ProductDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Collapsible Image Header
+          // ── Collapsible Image (bleeds to edges) ──
           SliverAppBar(
-            expandedHeight: 400.0,
+            expandedHeight: 420.0,
             pinned: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: theme.scaffoldBackgroundColor,
             elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
-              onPressed: () => context.pop(),
+            surfaceTintColor: Colors.transparent,
+            leading: GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
+              ),
             ),
+            actions: [
+              Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.share_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: 'product-${product.id}',
-                child: product.imageUrl.startsWith('assets/')
-                    ? Image.asset(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.broken_image_outlined, size: 48),
-                        ),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: product.imageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        ),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(Icons.broken_image_outlined, size: 48),
-                        ),
-                      ),
+                child: _buildProductImage(theme),
               ),
             ),
           ),
 
-          // Product Info
+          // ── Product Info ──
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
+              ),
+              transform: Matrix4.translationValues(0, -24, 0),
+              padding: const EdgeInsets.fromLTRB(28, 32, 28, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Brand + Badge row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        product.brand,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        product.brand.toUpperCase(),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.outline,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -75,102 +116,157 @@ class ProductDetailsPage extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          color: theme.colorScheme.secondaryFixed,
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Limited Edition',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          'LIMITED EDITION',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSecondaryFixed,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+
+                  // Product name
                   Text(
                     product.name,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      height: 1.15,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
+
+                  // Rating (decorative)
+                  Row(
+                    children: [
+                      ...List.generate(
+                        5,
+                        (i) => Icon(
+                          i < 4 ? Icons.star_rounded : Icons.star_half_rounded,
+                          color: theme.colorScheme.tertiaryFixedDim,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '4.5',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.outline,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '  ·  128 reviews',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.outline,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Price
                   Text(
                     '\$${product.price.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
 
                   // Narrative / Description
                   Text(
                     'The Narrative',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Text(
                     product.description,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      height: 1.6,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                      height: 1.7,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
                   // Features
-                  const _FeatureTile(
-                    icon: Icons.check_circle,
+                  _FeatureTile(
+                    icon: Icons.verified_rounded,
                     text: 'Scratch-resistant sapphire crystal',
+                    theme: theme,
                   ),
-                  const _FeatureTile(
-                    icon: Icons.check_circle,
+                  _FeatureTile(
+                    icon: Icons.water_drop_outlined,
                     text: 'Water resistant up to 50 meters',
+                    theme: theme,
                   ),
-                  const _FeatureTile(
-                    icon: Icons.check_circle,
+                  _FeatureTile(
+                    icon: Icons.shield_outlined,
                     text: '2-year international warranty',
+                    theme: theme,
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 120), // floating nav space
                 ],
               ),
             ),
           ),
         ],
       ),
+
+      // ── Bottom Action Bar ──
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          border: Border(
-            top: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)),
-          ),
+          color: theme.scaffoldBackgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+              blurRadius: 24,
+              offset: const Offset(0, -8),
+            ),
+          ],
         ),
         child: Row(
           children: [
+            // Favourite (ghost-border)
             Container(
-              padding: const EdgeInsets.all(12),
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(
-                Icons.favorite_border,
-                color: Theme.of(context).colorScheme.primary,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () {},
+                  child: Icon(
+                    Icons.favorite_border_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 16),
+            // Add to Cart (conversion CTA)
             Expanded(
               child: CustomButton(
                 text: 'Add to Cart',
+                isSecondary: true,
+                icon: Icons.shopping_bag_outlined,
                 onPressed: () {
                   context.read<CartBloc>().add(AddToCart(product));
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -178,9 +274,7 @@ class ProductDetailsPage extends StatelessWidget {
                       content: Text('${product.name} added to cart'),
                       action: SnackBarAction(
                         label: 'View Cart',
-                        onPressed: () {
-                          // In a real app, we might navigate to cart or switch tab
-                        },
+                        onPressed: () {},
                       ),
                     ),
                   );
@@ -192,22 +286,68 @@ class ProductDetailsPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildProductImage(ThemeData theme) {
+    if (product.imageUrl.startsWith('assets/')) {
+      return Image.asset(
+        product.imageUrl,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: theme.colorScheme.surfaceContainerHigh,
+          child: const Center(child: Icon(Icons.broken_image_outlined, size: 48)),
+        ),
+      );
+    }
+    return CachedNetworkImage(
+      imageUrl: product.imageUrl,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      placeholder: (context, url) => Container(
+        color: theme.colorScheme.surfaceContainerHighest,
+      ),
+      errorWidget: (context, url, error) => Container(
+        color: theme.colorScheme.surfaceContainerHigh,
+        child: const Center(child: Icon(Icons.broken_image_outlined, size: 48)),
+      ),
+    );
+  }
 }
 
 class _FeatureTile extends StatelessWidget {
   final IconData icon;
   final String text;
-  const _FeatureTile({required this.icon, required this.text});
+  final ThemeData theme;
+  const _FeatureTile({
+    required this.icon,
+    required this.text,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
-          Icon(icon, color: Colors.green, size: 20),
-          const SizedBox(width: 12),
-          Text(text, style: Theme.of(context).textTheme.bodyMedium),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryFixed.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: theme.colorScheme.primary, size: 18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -5,6 +5,12 @@ import 'package:newstore/core/constants/mock_data.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
 
+/// Search Results — "The Curated Pavilion" design.
+///
+/// • Filled search bar using surfaceContainerHigh (not surfaceContainerLow).
+/// • Recent searches as pill chips (secondaryFixed hover state).
+/// • Grid results with ProductCard tonal layering.
+/// • No borders anywhere.
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -35,6 +41,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -44,12 +51,21 @@ class _SearchPageState extends State<SearchPage> {
             controller: _searchController,
             onChanged: _onSearch,
             autofocus: true,
+            style: theme.textTheme.bodyMedium,
             decoration: InputDecoration(
               hintText: 'Search products, brands...',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(
+                Icons.search_rounded,
+                color: theme.colorScheme.outline,
+                size: 20,
+              ),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: theme.colorScheme.outline,
+                        size: 20,
+                      ),
                       onPressed: () {
                         _searchController.clear();
                         _onSearch('');
@@ -57,7 +73,7 @@ class _SearchPageState extends State<SearchPage> {
                     )
                   : null,
               filled: true,
-              fillColor: Theme.of(context).colorScheme.surfaceContainerLow,
+              fillColor: theme.colorScheme.surfaceContainerHigh,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -66,25 +82,26 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: _searchResults.isEmpty
           ? _buildInitialOrEmptyState()
           : GridView.builder(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 24,
+                mainAxisSpacing: 20,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.7,
+                childAspectRatio: 0.65,
               ),
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
                 final product = _searchResults[index];
                 return ProductCard(
                   product: product,
-                  onTap: () => context.push(AppRouter.productDetails, extra: product),
+                  onTap: () => context.push(
+                    AppRouter.productDetails,
+                    extra: product,
+                  ),
                 );
               },
             ),
@@ -92,20 +109,23 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildInitialOrEmptyState() {
+    final theme = Theme.of(context);
     if (_searchController.text.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(28.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Recently Searched',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: 10,
+              runSpacing: 10,
               children: MockData.recentSearches.map((tag) {
                 return GestureDetector(
                   onTap: () {
@@ -113,12 +133,28 @@ class _SearchPageState extends State<SearchPage> {
                     _onSearch(tag);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 10,
                     ),
-                    child: Text(tag, style: const TextStyle(fontWeight: FontWeight.w500)),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(999),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      tag,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
                   ),
                 );
               }).toList(),
@@ -132,15 +168,25 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off,
-            size: 80,
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHigh,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.search_off_rounded,
+              size: 36,
+              color: theme.colorScheme.outline,
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             'No results for "${_searchController.text}"',
-            style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 16),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
         ],
       ),

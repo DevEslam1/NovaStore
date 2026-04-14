@@ -1,35 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:newstore/core/constants/mock_data.dart';
 
+/// Orders — "The Curated Pavilion" design.
+///
+/// Zero-border order cards with tonal layering.
+/// Status badges with sm radius inside md card.
+/// Track Order button uses ghost-border (outlined).
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final orders = MockData.orderHistory;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Your Orders',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
         centerTitle: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24),
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          final order = orders[index];
-          return _OrderCard(
-            orderId: order['id'],
-            status: order['status'],
-            date: order['date'],
-            itemCount: order['items'],
-            total: order['total'],
-          );
-        },
+      body: orders.isEmpty
+          ? _buildEmptyState(theme)
+          : ListView.builder(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return _OrderCard(
+                  orderId: order['id'],
+                  status: order['status'],
+                  date: order['date'],
+                  itemCount: order['items'],
+                  total: order['total'],
+                );
+              },
+            ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHigh,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.receipt_long_outlined,
+              size: 44,
+              color: theme.colorScheme.outline,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No orders yet',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your order history will appear here.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -52,13 +97,21 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isDelivered = status == 'Delivered';
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+            blurRadius: 24,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,77 +121,88 @@ class _OrderCard extends StatelessWidget {
             children: [
               Text(
                 orderId,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: isDelivered
-                      ? Colors.green.withValues(alpha: 0.1)
-                      : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                      ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                      : theme.colorScheme.secondaryFixed,
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   status,
-                  style: TextStyle(
-                    color: isDelivered ? Colors.green : Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: isDelivered
+                        ? const Color(0xFF10B981)
+                        : theme.colorScheme.onSecondaryFixed,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             children: [
               Icon(
                 Icons.calendar_today_outlined,
-                size: 16,
-                color: Theme.of(context).colorScheme.outline,
+                size: 14,
+                color: theme.colorScheme.outline,
               ),
               const SizedBox(width: 8),
-              Text(date, style: TextStyle(color: Theme.of(context).colorScheme.outline)),
+              Text(
+                date,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
               const Spacer(),
               Text(
                 '$itemCount Item${itemCount > 1 ? 's' : ''}',
-                style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Divider(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Amount',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.outline,
+                ),
               ),
               Text(
                 '\$${total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
+            height: 48,
             child: OutlinedButton(
               onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
               child: const Text('Track Order'),
             ),
           ),

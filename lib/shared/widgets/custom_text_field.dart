@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Filled text field matching the "Ethereal Commerce" input specification.
+///
+/// Uses `surfaceContainerHighest` background, no outline by default,
+/// and a `primary` ghost-border (20% opacity) on focus.
 class CustomTextField extends StatelessWidget {
   final String label;
   final String? hint;
@@ -9,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final int maxLines;
 
   const CustomTextField({
     super.key,
@@ -20,26 +25,32 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.prefixIcon,
     this.suffixIcon,
+    this.maxLines = 1,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         TextFormField(
           controller: controller,
           obscureText: isPassword,
           validator: validator,
           keyboardType: keyboardType,
-          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: maxLines,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: prefixIcon,
