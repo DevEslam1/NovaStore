@@ -1,118 +1,275 @@
-# NovaStore | Premium E-Commerce Marketplace
+<p align="center">
+  <img src="assets/images/logo/App-icon.png" alt="NovaStore Logo" width="120" height="120" style="border-radius: 24px;" />
+</p>
 
-![NovaStore Banner](https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=1200)
+<h1 align="center">NovaStore</h1>
 
-**NovaStore** is a state-of-the-art, feature-rich e-commerce application built with Flutter. It combines a premium "Curated Boutique" aesthetic with a robust, production-grade architecture. Designed for performance, scalability, and visual excellence.
+<p align="center">
+  <strong>A premium, production-ready e-commerce mobile app built with Flutter & Firebase</strong>
+</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.11-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Dart-3.11-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
+  <img src="https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+  <img src="https://img.shields.io/badge/BLoC-State%20Mgmt-6C63FF?style=for-the-badge" alt="BLoC" />
+  <img src="https://img.shields.io/badge/Material%203-Design-4CAF50?style=for-the-badge&logo=material-design&logoColor=white" alt="Material 3" />
+</p>
 
-## 💎 Brand Identity & Design
-NovaStore prioritizes a **Premium Visual Identity** through:
-- **Centralized Branding**: New high-resolution app icon (Adaptive for Android/iOS) and multi-variant logos.
-- **Ethereal Commerce Design**: Implementation of the Stitch-based design system featuring gradient headers and pill-shaped components.
-- **Glassmorphism**: Elegant blur effects and translucent backgrounds (`BackdropFilter`) inspired by modern UI trends.
-- **Tonal Layering**: Harmonious color palettes (SecondaryContainer, SurfaceContainer) that adapt dynamically to dark/light modes.
-- **Micro-Animations**: Fluid transitions and hover effects using `AnimatedContainer` and standard Flutter animations.
-- **Modern Typography**: Pairings of **Outfit** (Headlines) and **Inter** (Body) for a premium editorial feel.
-
-## 🚀 Key Modules & Features
-
-### 1. 🌈 Onboarding & Splash
-- **Brand Splash**: Premium animated entry point showing the new NovaStore logo.
-- **High-Fidelity Onboarding**: Animated landing screens to guide new users.
-- **Remember Me**: Intelligent session persistence for returning users.
-
-### 2. 🔐 Authentication Center
-- **Dual-Mode Login**: Seamlessly toggle between **Email** and **Phone** authentication.
-- **Phone Auth (OTP)**: Secure Firebase-backed phone verification flow with a specialized PIN entry screen.
-- **OTP Verification**: Multi-purpose validation flow (Email/Phone) with countdown timers and resend logic.
-- **Guest Access**: Friction-less "Continue as Guest" entry for immediate browsing.
-- **Auth Persistence**: Automatic session management and redirection via `GoRouter` refresh streams.
-
-### 3. 🏠 Discovery Dashboard (Home)
-- **Hero Banners**: Vibrant promotional carousels for new collections.
-- **Category Explorer**: Icon-based chips for quick navigation.
-- **Flash Deals**: Time-sensitive product spotlights with specialized pricing.
-- **Recommended for You**: Personalized product grids based on curated algorithms.
-- **Pull-to-Refresh**: Instant data synchronization across the dashboard.
-
-### 4. 🔍 Premium Search & Discovery
-- **Real-Time Results**: Dynamic filtering as you type.
-- **Advanced Filtering**: Modal-based filter utility to drill down by category, price, or brand.
-- **Search History**: Convenient access to recent queries.
-
-### 5. 📦 Product Studio
-- **High-Res Imagery**: Support for networked carousels with cached loading.
-- **Spec Details**: Detailed descriptions, size selections, and variant options.
-- **Shimmer Skeletons**: Premium loading states using the `shimmer` package for smooth content arrival.
-- **Tonal Design**: Individual product pages use tonal layering to spotlight content.
-
-### 6. 🛒 Cart & Checkout
-- **Fluid Item Management**: Slide-to-delete cards and intuitive quantity controls.
-- **Glassmorphic Summary**: Transparent checkout card showing subtotal, shipping, and taxes.
-- **Streamlined Flow**: Preparation for full payment integration.
-
-### 7. 📦 Order Management
-- **Lifecycle Tracking**: Monitor orders from *Confirmed* to *Delivered*.
-- **Order History**: Comprehensive list of past purchases with status badges.
-- **Detailed Tracking**: Timeline-based view for shipping progress.
-
-### 8. 👤 Profile & Personalization
-- **Triple-Theme Engine**: Toggle between **System**, **Light**, and **Dark** modes with persistent storage.
-- **Asset Management**: Centralized `AppAssets` utility for optimized image and logo handling.
-- **Developer Tools**: Gated utility section for seeding Firestore with mock product catalogs.
+<p align="center">
+  <a href="https://stitch.withgoogle.com/projects/17376586620053144181">🎨 View Full Design on Google Stitch</a>
+</p>
 
 ---
 
-## 🏗 Technical Excellence
+## 📱 Screenshots
 
-### Clean Architecture
-The project follows a strict **Clean Architecture** pattern to ensure decoupling and testability:
-- **Domain Layer**: Pure business logic (Entities, Use Cases, Repository interfaces).
-- **Data Layer**: Implementation details (Models, Data Sources, Repository implementations).
-- **Presentation Layer**: UI and State Management (Widgets, BLoCs, Theme tokens).
-
-### Tech Stack
-- **Framework**: Flutter 3.24+ / Dart 3.5+
-- **Backend (mBaaS)**: Firebase (Authentication, Firestore, Storage)
-- **State management**: `flutter_bloc` & `equatable`
-- **Dependency Injection**: `get_it`
-- **Routing**: `go_router` (Declarative path-based navigation with argument passing)
-- **Local Storage**: `shared_preferences` & `path_provider`
-- **Analytics & Icons**: `flutter_launcher_icons`
-- **Visuals**: `google_fonts`, `flutter_svg`, `cached_network_image`, `pin_code_fields`, `shimmer`
+<p align="center">
+  <img src="assets/screenshots/onboarding.png" alt="Onboarding" width="220" />
+  &nbsp;&nbsp;
+  <img src="assets/screenshots/home.png" alt="Home" width="220" />
+  &nbsp;&nbsp;
+  <img src="assets/screenshots/details.png" alt="Product Details" width="220" />
+  &nbsp;&nbsp;
+  <img src="assets/screenshots/checkout.png" alt="Checkout" width="220" />
+</p>
 
 ---
 
-## 📂 Project Structure
-```text
+## ✨ About the Project
+
+**NovaStore** is a full-featured, luxury e-commerce application designed and built from scratch as a showcase of modern Flutter development practices. It demonstrates expertise in **clean architecture**, **reactive state management**, **Firebase backend integration**, and **premium UI/UX design**.
+
+The app's design system — *"The Curated Pavilion"* — follows an editorial, border-free aesthetic inspired by high-end digital galleries. Every screen was first prototyped in [Google Stitch](https://stitch.withgoogle.com/projects/17376586620053144181) and then implemented pixel-for-pixel in Flutter with Material 3 theming.
+
+> **This project is intended as a portfolio piece** demonstrating production-level Flutter skills, architectural decision-making, and end-to-end mobile development proficiency.
+
+---
+
+## 🏗️ Architecture
+
+NovaStore follows **Clean Architecture** principles with a clear separation of concerns:
+
+```
 lib/
-├── core/               # Cross-cutting infrastructure
-│   ├── bloc/           # Global application state (Theme, Locale)
-│   ├── constants/      # App constants and configuration
-│   ├── di/             # Dependency injection container
-│   ├── error/          # Failure and Exception mapping
-│   ├── theme/          # Design system tokens and styles
-│   └── utils/          # Seeder, validators, and helpers
-├── features/           # Modular feature domains
-│   ├── auth/           # Login, Signup, Guest flows
-│   ├── home/           # Dashboard and banners
-│   ├── cart/           # Basket management
-│   ├── orders/         # Lifecycle and history
-│   ├── profile/        # Settings and DevTools
-│   └── search/         # Discovery utility
-└── shared/             # Reusable UI components & global entities
+├── main.dart                          # App entry point
+├── firebase_options.dart              # Firebase config
+│
+├── core/                              # App-wide infrastructure
+│   ├── bloc/                          # Global state (theme, locale)
+│   ├── constants/                     # App constants & mock data
+│   ├── di/                            # Dependency injection (GetIt)
+│   ├── error/                         # Failure & exception handling
+│   ├── localization/                  # i18n (EN / AR)
+│   ├── network/                       # Network layer (Dio, connectivity)
+│   ├── routing/                       # GoRouter navigation
+│   ├── services/                      # Notification service
+│   ├── theme/                         # Material 3 theme, colors, typography
+│   └── utils/                         # Helpers & extensions
+│
+├── features/                          # Feature modules (Clean Arch)
+│   ├── auth/                          # 🔐 Authentication
+│   │   ├── data/                      #    Firebase Auth datasource & repo
+│   │   ├── domain/                    #    Entities, repos, use cases
+│   │   └── presentation/             #    AuthBloc, Login, Sign Up, OTP
+│   │
+│   ├── home/                          # 🏠 Home & Discovery
+│   │   └── presentation/             #    ProductsBloc, HomePage
+│   │
+│   ├── product/                       # 📦 Product Details
+│   │   └── presentation/             #    Product detail page
+│   │
+│   ├── search/                        # 🔍 Search & Filter
+│   │   └── presentation/             #    Search results page
+│   │
+│   ├── shop/                          # 🛍️ Shop / Categories
+│   │   └── presentation/             #    Shop page with grid layout
+│   │
+│   ├── cart/                          # 🛒 Shopping Cart
+│   │   └── presentation/             #    CartBloc, cart page
+│   │
+│   ├── checkout/                      # 💳 Checkout Flow
+│   │   └── presentation/             #    Address, payment, confirm
+│   │
+│   ├── order/                         # 📋 Orders & Tracking
+│   │   └── presentation/             #    OrdersBloc, tracking page
+│   │
+│   ├── profile/                       # 👤 User Profile
+│   │   └── presentation/             #    AddressBloc, profile page
+│   │
+│   ├── onboarding/                    # 🎬 Onboarding
+│   │   └── presentation/             #    Swipeable intro screens
+│   │
+│   └── splash/                        # ⚡ Splash Screen
+│       └── presentation/             #    Animated brand splash
+│
+└── shared/                            # Shared components
+    ├── data/models/                   # Shared data models
+    ├── domain/entities/               # Product entity
+    └── widgets/                       # Reusable widgets
 ```
 
 ---
 
-## 🛠 Setup & Deployment
-1. **Prerequisites**: Ensure Flutter SDK and `flutterfire_cli` are installed.
-2. **Clone**: `git clone [repository-url]`
-3. **Init**: Run `flutter pub get` and `flutterfire configure`.
-4. **Seed**: Use the **Seeder** tool in the Profile page (Debug Mode) to populate your Firestore.
-5. **Run**: `flutter run`
+## 🎨 Design System — *The Curated Pavilion*
+
+The UI follows a bespoke design system emphasizing **tonal layering** over borders, **editorial typography**, and **glassmorphic surfaces**:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| **Primary** | `#002444` Deep Navy | Headers, CTAs, authority elements |
+| **Secondary** | `#FD761A` Coral Orange | Conversion actions (Add to Cart) |
+| **Surface** | `#F7F9FB` | Base background |
+| **Headline Font** | Plus Jakarta Sans | Display & headline text |
+| **Body Font** | Inter | Body copy & labels |
+| **Corner Radius** | Full (pill) | Buttons, chips, nav bar |
+
+### Design Principles
+
+- **🚫 No-Line Rule** — Boundaries defined by surface color shifts, never 1px borders
+- **🪟 Glassmorphism** — Floating nav with 80% opacity + backdrop blur
+- **🎭 Tonal Layering** — Depth through ambient surface stacking, not drop shadows
+- **📐 Intentional Asymmetry** — Editorial layouts that break the "template" feel
+
+> 🔗 [**Explore the full design on Google Stitch →**](https://stitch.withgoogle.com/projects/17376586620053144181)
 
 ---
+
+## 🚀 Key Features
+
+### Implemented ✅
+
+| Feature | Description |
+|---------|-------------|
+| **Onboarding** | Multi-page swipeable intro with premium imagery |
+| **Authentication** | Firebase Auth — email/password, guest mode, OTP verification |
+| **Home & Discovery** | Category browsing, new arrivals, trending sections |
+| **Product Details** | Full-bleed imagery, size selection, reviews, add to cart |
+| **Search** | Real-time product search with results |
+| **Shop / Categories** | Grid-based category browsing |
+| **Shopping Cart** | Add/remove items, quantity control, price calculation |
+| **Checkout** | Multi-step: address → delivery → payment → confirmation |
+| **Order Management** | Order list, status tracking with timeline stepper |
+| **User Profile** | Profile display, address management |
+| **Dark / Light Mode** | Full Material 3 theme switching |
+| **Localization** | English & Arabic (RTL) support |
+| **Shimmer Loading** | Skeleton UI states across all pages |
+| **Pull to Refresh** | Refresh data on Home, Cart, and Orders |
+| **Network Monitoring** | Offline banner with connectivity detection |
+| **Crash Reporting** | Firebase Crashlytics integration |
+| **Push Notifications** | Firebase Cloud Messaging setup |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Flutter 3.11 / Dart 3.11 |
+| **State Management** | flutter_bloc / BLoC |
+| **Navigation** | GoRouter (declarative routing) |
+| **Backend** | Firebase (Auth, Firestore, Storage, FCM) |
+| **DI** | GetIt + injectable pattern |
+| **Networking** | Dio with interceptors |
+| **Error Handling** | Dartz (Either/Failure pattern) |
+| **Theming** | Material 3 with custom design tokens |
+| **Fonts** | Google Fonts (Plus Jakarta Sans, Inter) |
+| **Images** | Cached Network Image |
+| **Local Storage** | SharedPreferences |
+| **Analytics** | Firebase Analytics |
+| **Crash Reporting** | Firebase Crashlytics |
+| **Testing** | flutter_test, bloc_test, mocktail |
+
+---
+
+## 🏃 Getting Started
+
+### Prerequisites
+
+- Flutter SDK `^3.11.1`
+- Dart SDK `^3.11.1`
+- Firebase project configured
+- Android Studio / VS Code
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/DevEslam/NovaStore.git
+cd NovaStore
+
+# Install dependencies
+flutter pub get
+
+# Run the app
+flutter run
+```
+
+### Firebase Setup
+
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Add Android & iOS apps to the project
+3. Download and place config files:
+   - `google-services.json` → `android/app/`
+   - `GoogleService-Info.plist` → `ios/Runner/`
+4. Run `flutterfire configure` to generate `firebase_options.dart`
+
+---
+
+## 📂 Screens Overview
+
+| Screen | Description |
+|--------|-------------|
+| Splash | Animated brand intro with auth state check |
+| Onboarding | 3-page premium intro carousel |
+| Login / Sign Up | Email & password authentication |
+| OTP Verification | 6-digit pin code verification |
+| Home & Discovery | Hero banners, categories, product grids |
+| Product Details | Immersive product view with size picker |
+| Search Results | Real-time search with product cards |
+| Shop / Categories | Filterable category grid |
+| Shopping Cart | Cart management with price summary |
+| Checkout: Address | Address selection & delivery options |
+| Checkout: Payment | Payment method & order confirmation |
+| Order Success | Confirmation with order details |
+| Order Tracking | Timeline stepper with status updates |
+| User Profile | Account info & address management |
+| Filter Modal | Price, category, brand, rating filters |
+| Empty / Error States | Graceful empty cart, no results, errors |
+| Skeleton Loading | Shimmer placeholders for all pages |
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all unit & widget tests
+flutter test
+
+# Run with coverage
+flutter test --coverage
+```
+
+---
+
 ## 📄 License
-Internal project for **NovaStore**. All rights reserved.
+
+This project is for **portfolio and demonstration purposes**. Feel free to use it as a reference or learning resource.
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ by Eslam</strong>
+  <br />
+  <em>Flutter Developer · Mobile Engineering · Clean Architecture Enthusiast</em>
+</p>
+
+<p align="center">
+  <a href="https://linkedin.com/in/DevEslam">
+    <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/DevEslam">
+    <img src="https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+</p>
