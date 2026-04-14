@@ -94,6 +94,15 @@ lib/
 │   ├── order/                         # 📋 Orders & Tracking
 │   │   └── presentation/             #    OrdersBloc, tracking page
 │   │
+│   ├── favorites/                     # ❤️ Favorites / Wishlist
+│   │   ├── data/                      #    Local datasource & repo
+│   │   ├── domain/                    #    FavoriteItem entity & repo
+│   │   └── presentation/             #    FavoritesBloc, favorites page
+│   │
+│   ├── notifications/                 # 🔔 Notification Center
+│   │   ├── domain/                    #    NotificationItem entity
+│   │   └── presentation/             #    Notification page
+│   │
 │   ├── profile/                       # 👤 User Profile
 │   │   └── presentation/             #    AddressBloc, profile page
 │   │
@@ -150,6 +159,8 @@ The UI follows a bespoke design system emphasizing **tonal layering** over borde
 | **Shopping Cart** | Add/remove items, quantity control, price calculation |
 | **Checkout** | Multi-step: address → delivery → payment → confirmation |
 | **Order Management** | Order list, status tracking with timeline stepper |
+| **Favorites / Wishlist** | Toggle favorites from product cards & details, dedicated favorites page |
+| **Notification Center** | In-app notification feed with update, order & promotion categories |
 | **User Profile** | Profile display, address management |
 | **Dark / Light Mode** | Full Material 3 theme switching |
 | **Localization** | English & Arabic (RTL) support |
@@ -157,7 +168,7 @@ The UI follows a bespoke design system emphasizing **tonal layering** over borde
 | **Pull to Refresh** | Refresh data on Home, Cart, and Orders |
 | **Network Monitoring** | Offline banner with connectivity detection |
 | **Crash Reporting** | Firebase Crashlytics integration |
-| **Push Notifications** | Firebase Cloud Messaging setup |
+| **Push Notifications** | Firebase Cloud Messaging with automatic token sync & deep-link navigation |
 
 ---
 
@@ -233,6 +244,8 @@ flutter run
 | Checkout: Payment | Payment method & order confirmation |
 | Order Success | Confirmation with order details |
 | Order Tracking | Timeline stepper with status updates |
+| Favorites | Saved products grid with heart toggle |
+| Notifications | In-app notification feed (updates, promotions, orders) |
 | User Profile | Account info & address management |
 | Filter Modal | Price, category, brand, rating filters |
 | Empty / Error States | Graceful empty cart, no results, errors |
