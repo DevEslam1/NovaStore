@@ -32,7 +32,7 @@ class OrderTrackingPage extends StatelessWidget {
         slivers: [
           // ── Gradient Header with order details ──
           SliverAppBar(
-            expandedHeight: 260,
+            expandedHeight: 310,
             pinned: true,
             backgroundColor: theme.colorScheme.primary,
             surfaceTintColor: Colors.transparent,
@@ -221,7 +221,9 @@ class OrderTrackingPage extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                         child: const Text('Back to Orders'),
                       ),
                     ),
@@ -259,10 +261,15 @@ class OrderTrackingPage extends StatelessWidget {
     ];
 
     int currentLevel = 0;
-    if (status == 'Confirmed') currentLevel = 1;
-    else if (status == 'Processing') currentLevel = 2;
-    else if (status == 'Shipped') currentLevel = 3;
-    else if (status == 'Delivered') currentLevel = 4;
+    if (status == 'Confirmed') {
+      currentLevel = 1;
+    } else if (status == 'Processing') {
+      currentLevel = 2;
+    } else if (status == 'Shipped') {
+      currentLevel = 3;
+    } else if (status == 'Delivered') {
+      currentLevel = 4;
+    }
 
     List<Widget> stepWidgets = [];
     for (int i = steps.length - 1; i >= 0; i--) {

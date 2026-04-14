@@ -49,7 +49,12 @@ class OrdersError extends OrdersState {
   List<Object?> get props => [message];
 }
 
-class OrderCreatedSuccess extends OrdersState {}
+class OrderCreatedSuccess extends OrdersState {
+  final OrderEntity order;
+  const OrderCreatedSuccess(this.order);
+  @override
+  List<Object?> get props => [order];
+}
 
 // Bloc
 class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
@@ -70,7 +75,7 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
       final result = await repository.createOrder(event.order);
       result.fold(
         (failure) => emit(OrdersError(failure.message)),
-        (_) => emit(OrderCreatedSuccess()),
+        (_) => emit(OrderCreatedSuccess(event.order)),
       );
     });
   }

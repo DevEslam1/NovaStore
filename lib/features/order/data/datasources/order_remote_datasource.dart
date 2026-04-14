@@ -29,12 +29,16 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       final snapshot = await firestore
           .collection('orders')
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      return snapshot.docs
+      final orders = snapshot.docs
           .map((doc) => OrderModel.fromJson(doc.data(), doc.id))
           .toList();
+
+      // Sort locally to avoid needing a Firestore composite index
+      orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      return orders;
     } on FirebaseException catch (e) {
       throw ServerException(e.message ?? e.toString());
     } catch (e) {

@@ -346,7 +346,7 @@ class _PaymentPageState extends State<PaymentPage> {
               if (state is OrderCreatedSuccess) {
                 // Clear cart after success
                 context.read<CartBloc>().add(ClearCart());
-                _showPaymentSuccessDialog(context);
+                _showPaymentSuccessDialog(context, state.order);
               } else if (state is OrdersError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message), backgroundColor: theme.colorScheme.error),
@@ -434,12 +434,12 @@ class _PaymentPageState extends State<PaymentPage> {
     context.read<OrdersBloc>().add(CreateOrder(order));
   }
 
-  void _showPaymentSuccessDialog(BuildContext context) {
+  void _showPaymentSuccessDialog(BuildContext context, OrderEntity order) {
     final theme = Theme.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
+      builder: (dialogContext) => Dialog(
         child: Padding(
           padding: const EdgeInsets.all(36),
           child: Column(
@@ -479,8 +479,24 @@ class _PaymentPageState extends State<PaymentPage> {
                 text: 'Track Your Order',
                 isSecondary: true,
                 onPressed: () {
-                  Navigator.of(context).pop(); // dismiss dialog
-                  context.pushReplacement(AppRouter.home); // go home
+                  Navigator.of(dialogContext).pop(); // dismiss dialog
+                  context.go(AppRouter.home); // reset history stack
+                  
+                  // Wait for go to complete on the event loop before pushing
+                  Future.delayed(const Duration(milliseconds: 50), () {
+                    if (context.mounted) {
+                      context.push(
+                        AppRouter.orderTracking,
+                        extra: {
+                          'id': order.id,
+                          'status': 'Pending', // New orders start at Pending
+                          'date': '${order.createdAt.month}/${order.createdAt.day}/${order.createdAt.year}',
+                          'total': order.totalAmount,
+                          'items': order.items.length,
+                        },
+                      );
+                    }
+                  });
                 },
                 width: double.infinity,
                 height: 52,
@@ -488,8 +504,8 @@ class _PaymentPageState extends State<PaymentPage> {
               const SizedBox(height: 10),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(dialogContext).pop();
+                  context.go(AppRouter.home);
                 },
                 child: Text(
                   'Back to Home',

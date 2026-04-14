@@ -57,12 +57,19 @@ class ShopPage extends StatelessWidget {
               // Fallback to determine icon
               IconData icon = Icons.category_rounded;
               final catId = cat['id'] ?? '';
-              if (catId == 'watches') icon = Icons.watch_rounded;
-              else if (catId == 'tech') icon = Icons.computer_rounded;
-              else if (catId == 'lifestyle') icon = Icons.directions_run_rounded;
-              else if (catId == 'audio') icon = Icons.headphones_rounded;
-              else if (catId == 'apparel') icon = Icons.checkroom_rounded;
-              else if (catId == 'home') icon = Icons.chair_rounded;
+              if (catId == 'watches') {
+                icon = Icons.watch_rounded;
+              } else if (catId == 'tech') {
+                icon = Icons.computer_rounded;
+              } else if (catId == 'lifestyle') {
+                icon = Icons.directions_run_rounded;
+              } else if (catId == 'audio') {
+                icon = Icons.headphones_rounded;
+              } else if (catId == 'apparel') {
+                icon = Icons.checkroom_rounded;
+              } else if (catId == 'home') {
+                icon = Icons.chair_rounded;
+              }
 
               return _CategoryCard(
                 label: cat['name'] as String? ?? 'Category',
