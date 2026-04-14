@@ -1,21 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:newstore/core/constants/mock_data.dart';
+import 'package:intl/intl.dart';
 import 'package:newstore/core/routing/app_router.dart';
+import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newstore/features/order/domain/entities/order_entity.dart';
+import 'package:newstore/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:newstore/shared/widgets/empty_state_widget.dart';
 
 /// Orders — "NovaStore" design.
-///
-/// Zero-border order cards with tonal layering.
-/// Status badges with sm radius inside md card.
-/// Track Order button uses ghost-border (outlined).
-class OrdersPage extends StatelessWidget {
+class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
+
+  @override
+  State<OrdersPage> createState() => _OrdersPageState();
+}
+
+class _OrdersPageState extends State<OrdersPage> {
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  void _loadOrders() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      context.read<OrdersBloc>().add(LoadOrders(authState.user.id));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final orders = MockData.orderHistory;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -26,59 +43,90 @@ class OrdersPage extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: orders.isEmpty
-          ? EmptyStateWidget(
-              title: 'No orders yet',
-              message: 'Your order history will appear here. Start shopping to see your orders!',
-              icon: Icons.receipt_long_outlined,
-              actionLabel: 'Shop Now',
-              onAction: () => context.go(AppRouter.home),
-            )
-          : RefreshIndicator(
-              onRefresh: () async {
-                // Simulate network delay for mock data
-                await Future.delayed(const Duration(milliseconds: 1500));
-              },
+      body: BlocBuilder<OrdersBloc, OrdersState>(
+        builder: (context, state) {
+          if (state is OrdersLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is OrdersError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is OrdersLoaded) {
+            final orders = state.orders;
+            if (orders.isEmpty) {
+              return EmptyStateWidget(
+                title: 'No orders yet',
+                message: 'Your order history will appear here. Start shopping to see your orders!',
+                icon: Icons.receipt_long_outlined,
+                actionLabel: 'Shop Now',
+                onAction: () => context.go(AppRouter.home),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async => _loadOrders(),
               child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(), // Important for short lists
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return _OrderCard(
-                    orderId: order['id'],
-                    status: order['status'],
-                    date: order['date'],
-                    itemCount: order['items'],
-                    total: order['total'],
-                  );
+                  return _OrderCard(order: orders[index]);
                 },
               ),
-            ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
-
 }
 
 class _OrderCard extends StatelessWidget {
-  final String orderId;
-  final String status;
-  final String date;
-  final int itemCount;
-  final double total;
+  final OrderEntity order;
 
-  const _OrderCard({
-    required this.orderId,
-    required this.status,
-    required this.date,
-    required this.itemCount,
-    required this.total,
-  });
+  const _OrderCard({required this.order});
+
+  String _getStatusText(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return 'Pending';
+      case OrderStatus.confirmed:
+        return 'Confirmed';
+      case OrderStatus.processing:
+        return 'Processing';
+      case OrderStatus.shipped:
+        return 'Shipped';
+      case OrderStatus.delivered:
+        return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  Color _getStatusColor(OrderStatus status, ThemeData theme) {
+    if (status == OrderStatus.delivered) return const Color(0xFF10B981);
+    if (status == OrderStatus.cancelled) return theme.colorScheme.error;
+    return theme.colorScheme.onSecondaryFixed;
+  }
+
+  Color _getStatusBg(OrderStatus status, ThemeData theme) {
+    if (status == OrderStatus.delivered) return const Color(0xFF10B981).withValues(alpha: 0.1);
+    if (status == OrderStatus.cancelled) return theme.colorScheme.errorContainer;
+    return theme.colorScheme.secondaryFixed;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDelivered = status == 'Delivered';
+    final statusText = _getStatusText(order.status);
+    final statusColor = _getStatusColor(order.status, theme);
+    final statusBg = _getStatusBg(order.status, theme);
+    final dateFormatted = DateFormat('MMM dd, yyyy').format(order.createdAt);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(24),
@@ -100,7 +148,7 @@ class _OrderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                orderId,
+                'ORDER #${order.id.substring(0, 8).toUpperCase()}',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -111,17 +159,13 @@ class _OrderCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: isDelivered
-                      ? const Color(0xFF10B981).withValues(alpha: 0.1)
-                      : theme.colorScheme.secondaryFixed,
+                  color: statusBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  status,
+                  statusText,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: isDelivered
-                        ? const Color(0xFF10B981)
-                        : theme.colorScheme.onSecondaryFixed,
+                    color: statusColor,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                   ),
@@ -139,14 +183,14 @@ class _OrderCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                date,
+                dateFormatted,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.outline,
                 ),
               ),
               const Spacer(),
               Text(
-                '$itemCount Item${itemCount > 1 ? 's' : ''}',
+                '${order.items.length} Item${order.items.length > 1 ? 's' : ''}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.outline,
                 ),
@@ -170,7 +214,7 @@ class _OrderCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${total.toStringAsFixed(2)}',
+                '\$${order.totalAmount.toStringAsFixed(2)}',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -185,11 +229,11 @@ class _OrderCard extends StatelessWidget {
               onPressed: () => context.push(
                 AppRouter.orderTracking,
                 extra: {
-                  'id': orderId,
-                  'status': status,
-                  'date': date,
-                  'total': total,
-                  'items': itemCount,
+                  'id': order.id,
+                  'status': statusText,
+                  'date': dateFormatted,
+                  'total': order.totalAmount,
+                  'items': order.items.length,
                 },
               ),
               child: const Text('Track Order'),

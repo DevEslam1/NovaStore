@@ -7,14 +7,17 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 
 import '../../features/product/presentation/pages/product_details_page.dart';
-import '../../features/cart/presentation/pages/checkout_page.dart';
-import '../../features/cart/presentation/pages/payment_page.dart';
+import '../../features/checkout/presentation/pages/checkout_page.dart';
+import '../../features/checkout/presentation/pages/payment_page.dart';
 import '../../features/shop/presentation/pages/search_page.dart';
-import '../../features/orders/presentation/pages/order_tracking_page.dart';
+import '../../features/shop/presentation/pages/category_products_page.dart';
+import '../../features/order/presentation/pages/orders_page.dart';
+import '../../features/order/presentation/pages/order_tracking_page.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import '../../features/profile/presentation/pages/addresses_page.dart';
 import '../../features/profile/presentation/pages/add_address_page.dart';
 import '../../features/profile/domain/entities/address_entity.dart';
+import '../../features/cart/domain/entities/cart_item.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import '../di/injection_container.dart';
 
@@ -33,6 +36,8 @@ class AppRouter {
   static const String checkout = '/checkout';
   static const String payment = '/payment';
   static const String search = '/search';
+  static const String categoryProducts = '/category-products';
+  static const String orders = '/orders';
   static const String orderTracking = '/order-tracking';
   static const String addresses = '/addresses';
   static const String addAddress = '/add-address';
@@ -101,11 +106,28 @@ class AppRouter {
       ),
       GoRoute(
         path: payment,
-        builder: (context, state) => const PaymentPage(),
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return PaymentPage(
+            items: args['items'] as List<CartItem>,
+            subtotal: args['subtotal'] as double,
+            shippingFee: args['shippingFee'] as double,
+            tax: args['tax'] as double,
+            total: args['total'] as double,
+            shippingAddress: args['shippingAddress'] as String,
+          );
+        },
       ),
       GoRoute(
         path: search,
         builder: (context, state) => const SearchPage(),
+      ),
+      GoRoute(
+        path: categoryProducts,
+        builder: (context, state) {
+          final category = state.extra as String;
+          return CategoryProductsPage(category: category);
+        },
       ),
       GoRoute(
         path: productDetails,
@@ -113,6 +135,10 @@ class AppRouter {
           final product = state.extra as Product;
           return ProductDetailsPage(product: product);
         },
+      ),
+      GoRoute(
+        path: orders,
+        builder: (context, state) => const OrdersPage(),
       ),
       GoRoute(
         path: orderTracking,

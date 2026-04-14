@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:newstore/features/home/presentation/pages/home_page.dart';
 import 'package:newstore/features/cart/presentation/pages/cart_page.dart';
-import 'package:newstore/features/orders/presentation/pages/orders_page.dart';
+import 'package:newstore/features/order/presentation/pages/orders_page.dart';
 import 'package:newstore/features/profile/presentation/pages/profile_page.dart';
 import 'package:newstore/features/shop/presentation/pages/shop_page.dart';
 

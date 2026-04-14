@@ -20,10 +20,10 @@ import '../../features/home/presentation/bloc/products_bloc.dart';
 import '../../features/cart/domain/repositories/cart_repository.dart';
 import '../../features/cart/data/repositories/cart_repository_impl.dart';
 import '../../features/cart/data/datasources/cart_local_datasource.dart';
-import '../../features/orders/domain/repositories/order_repository.dart';
-import '../../features/orders/data/repositories/order_repository_impl.dart';
-import '../../features/orders/data/datasources/order_remote_datasource.dart';
-import '../../features/orders/presentation/bloc/orders_bloc.dart';
+import '../../features/order/domain/repositories/order_repository.dart';
+import '../../features/order/data/repositories/order_repository_impl.dart';
+import '../../features/order/data/datasources/order_remote_datasource.dart';
+import '../../features/order/presentation/bloc/orders_bloc.dart';
 import '../../features/profile/presentation/bloc/address_bloc.dart';
 import '../../features/profile/domain/repositories/address_repository.dart';
 import '../../features/profile/data/repositories/address_repository_impl.dart';
@@ -52,7 +52,7 @@ Future<void> init() async {
 
   //! Features - Products
   // Blocs
-  sl.registerLazySingleton(() => ProductsBloc(getProductsUseCase: sl()));
+  sl.registerFactory(() => ProductsBloc(getProductsUseCase: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetProductsUseCase(sl()));

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:newstore/shared/widgets/product_card.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
@@ -260,24 +261,45 @@ class _HomePageState extends State<HomePage> {
                         _SectionHeader(title: l10n.translate('shop')),
                         SizedBox(
                           height: 100,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            children: const [
-                              _CategoryItem(
-                                  label: 'Fashion', icon: Icons.checkroom),
-                              _CategoryItem(
-                                  label: 'Electronics', icon: Icons.devices),
-                              _CategoryItem(label: 'Living', icon: Icons.weekend),
-                              _CategoryItem(
-                                label: 'Sports',
-                                icon: Icons.sports_tennis,
-                              ),
-                              _CategoryItem(
-                                label: 'Beauty',
-                                icon: Icons.face_retouching_natural,
-                              ),
-                            ],
+                          child: FutureBuilder<QuerySnapshot>(
+                            future: FirebaseFirestore.instance.collection('categories').get(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator.adaptive());
+                              }
+                              if (snapshot.hasError || !(snapshot.hasData)) {
+                                return const SizedBox.shrink();
+                              }
+                              final docs = snapshot.data!.docs;
+                              if (docs.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                itemCount: docs.length,
+                                itemBuilder: (context, index) {
+                                  final cat = docs[index].data() as Map<String, dynamic>;
+                                  IconData icon = Icons.category_rounded;
+                                  final catId = cat['id'] ?? '';
+                                  if (catId == 'watches') icon = Icons.watch_rounded;
+                                  else if (catId == 'tech') icon = Icons.computer_rounded;
+                                  else if (catId == 'lifestyle') icon = Icons.directions_run_rounded;
+                                  else if (catId == 'audio') icon = Icons.headphones_rounded;
+                                  else if (catId == 'apparel') icon = Icons.checkroom_rounded;
+                                  else if (catId == 'home') icon = Icons.chair_rounded;
+
+                                  return _CategoryItem(
+                                    label: cat['name'] as String? ?? 'Category',
+                                    icon: icon,
+                                    onTap: () => context.push(
+                                      AppRouter.categoryProducts,
+                                      extra: cat['name'],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -434,33 +456,37 @@ class _SectionHeader extends StatelessWidget {
 class _CategoryItem extends StatelessWidget {
   final String label;
   final IconData icon;
-  const _CategoryItem({required this.label, required this.icon});
+  final VoidCallback? onTap;
+  const _CategoryItem({required this.label, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(right: 20),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHigh,
-              shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 20),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHigh,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: theme.colorScheme.primary, size: 26),
             ),
-            child: Icon(icon, color: theme.colorScheme.primary, size: 26),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface,
+            const SizedBox(height: 10),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -16,6 +16,11 @@ class PaginatedProductsResult {
 }
 
 abstract class ProductRepository {
-  Future<Either<Failure, PaginatedProductsResult>> getProducts({int limit = 10, DocumentSnapshot? lastDoc});
+  Future<Either<Failure, PaginatedProductsResult>> getProducts({
+    int limit = 10,
+    DocumentSnapshot? lastDoc,
+    String? category,
+    String? searchQuery,
+  });
   Future<Either<Failure, Product>> getProductById(String id);
 }

@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
+import 'package:newstore/features/cart/domain/entities/cart_item.dart';
+import 'package:newstore/features/order/presentation/bloc/orders_bloc.dart';
+import 'package:newstore/features/order/domain/entities/order_entity.dart';
+import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:newstore/core/routing/app_router.dart';
+import 'package:uuid/uuid.dart';
 
 /// Checkout: Payment & Confirm — "NovaStore" design.
 ///
@@ -12,7 +21,22 @@ import 'package:newstore/shared/widgets/custom_button.dart';
 ///   • Navy "Confirm & Pay" CTA at bottom.
 ///   • Secure checkout banner with lock icon.
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+  final List<CartItem> items;
+  final double subtotal;
+  final double shippingFee;
+  final double tax;
+  final double total;
+  final String shippingAddress;
+
+  const PaymentPage({
+    super.key,
+    required this.items,
+    required this.subtotal,
+    required this.shippingFee,
+    required this.tax,
+    required this.total,
+    required this.shippingAddress,
+  });
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -210,14 +234,14 @@ class _PaymentPageState extends State<PaymentPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Architectural Timepiece',
+                                    widget.items.first.product.name,
                                     style: theme.textTheme.titleSmall?.copyWith(
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Brushed Steel / 42mm',
+                                    '${widget.items.length} items',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.outline,
                                     ),
@@ -226,7 +250,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               ),
                             ),
                             Text(
-                              '\$349.00',
+                              '\$${widget.subtotal.toStringAsFixed(2)}',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w800,
                               ),
@@ -243,20 +267,20 @@ class _PaymentPageState extends State<PaymentPage> {
                         // Summary rows
                         _SummaryRow(
                           label: 'Subtotal',
-                          value: '\$349.00',
+                          value: '\$${widget.subtotal.toStringAsFixed(2)}',
                           theme: theme,
                         ),
                         const SizedBox(height: 8),
                         _SummaryRow(
                           label: 'Shipping',
-                          value: 'Free',
+                          value: widget.shippingFee == 0 ? 'Free' : '\$${widget.shippingFee.toStringAsFixed(2)}',
                           theme: theme,
-                          isHighlighted: true,
+                          isHighlighted: widget.shippingFee == 0,
                         ),
                         const SizedBox(height: 8),
                         _SummaryRow(
                           label: 'Tax',
-                          value: '\$18.50',
+                          value: '\$${widget.tax.toStringAsFixed(2)}',
                           theme: theme,
                         ),
                         Padding(
@@ -276,7 +300,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               ),
                             ),
                             Text(
-                              '\$367.50',
+                              '\$${widget.total.toStringAsFixed(2)}',
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w800,
                               ),
@@ -317,56 +341,97 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
 
           // ── Bottom CTA Bar ──
-          Container(
-            padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              boxShadow: [
-                BoxShadow(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
-                  blurRadius: 24,
-                  offset: const Offset(0, -8),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CustomButton(
-                    text: 'Confirm & Pay · \$367.50',
-                    icon: Icons.lock_outline_rounded,
-                    onPressed: () {
-                      _showPaymentSuccessDialog(context);
-                    },
-                    width: double.infinity,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.shield_outlined,
-                        size: 14,
-                        color: theme.colorScheme.outline,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Secured with 256-bit SSL encryption',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                      ),
-                    ],
+          BlocListener<OrdersBloc, OrdersState>(
+            listener: (context, state) {
+              if (state is OrderCreatedSuccess) {
+                // Clear cart after success
+                context.read<CartBloc>().add(ClearCart());
+                _showPaymentSuccessDialog(context);
+              } else if (state is OrdersError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message), backgroundColor: theme.colorScheme.error),
+                );
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+                    blurRadius: 24,
+                    offset: const Offset(0, -8),
                   ),
                 ],
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BlocBuilder<OrdersBloc, OrdersState>(
+                      builder: (context, state) {
+                        return CustomButton(
+                          text: 'Confirm & Pay · \$${widget.total.toStringAsFixed(2)}',
+                          icon: Icons.lock_outline_rounded,
+                          isLoading: state is OrdersLoading,
+                          onPressed: () {
+                            _createOrder(context);
+                          },
+                          width: double.infinity,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.shield_outlined,
+                          size: 14,
+                          color: theme.colorScheme.outline,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Secured with 256-bit SSL encryption',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _createOrder(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not authenticated')),
+      );
+      return;
+    }
+
+    final order = OrderEntity(
+      id: const Uuid().v4(),
+      userId: authState.user.id,
+      items: widget.items,
+      totalAmount: widget.total,
+      status: OrderStatus.pending,
+      createdAt: DateTime.now(),
+      shippingAddress: widget.shippingAddress,
+      paymentMethod: _selectedCardIndex == 0 ? 'Visa' : 'Mastercard',
+    );
+
+    context.read<OrdersBloc>().add(CreateOrder(order));
   }
 
   void _showPaymentSuccessDialog(BuildContext context) {
@@ -415,7 +480,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 isSecondary: true,
                 onPressed: () {
                   Navigator.of(context).pop(); // dismiss dialog
-                  Navigator.of(context).pop(); // back to checkout
+                  context.pushReplacement(AppRouter.home); // go home
                 },
                 width: double.infinity,
                 height: 52,

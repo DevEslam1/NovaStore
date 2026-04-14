@@ -1,43 +1,53 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newstore/shared/widgets/product_card.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import 'package:newstore/core/constants/mock_data.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:newstore/features/home/presentation/bloc/products_bloc.dart';
+import 'package:newstore/core/di/injection_container.dart';
 import '../widgets/filter_modal.dart';
 
 /// Search Results — "NovaStore" design.
-///
-/// • Filled search bar using surfaceContainerHigh (not surfaceContainerLow).
-/// • Recent searches as pill chips (secondaryFixed hover state).
-/// • Grid results with ProductCard tonal layering.
-/// • No borders anywhere.
-class SearchPage extends StatefulWidget {
+class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<ProductsBloc>(),
+      child: const SearchView(),
+    );
+  }
 }
 
-class _SearchPageState extends State<SearchPage> {
-  final TextEditingController _searchController = TextEditingController();
-  List<Product> _searchResults = [];
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
 
-  void _onSearch(String query) {
-    if (query.isEmpty) {
-      setState(() => _searchResults = []);
-      return;
-    }
-    final allProducts = [...MockData.flashDeals, ...MockData.recommended];
-    setState(() {
-      _searchResults = allProducts
-          .where(
-            (p) =>
-                p.name.toLowerCase().contains(query.toLowerCase()) ||
-                p.brand.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
+  @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView> {
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (query.isNotEmpty) {
+        context.read<ProductsBloc>().add(GetProductsRequested(searchQuery: query));
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
           padding: const EdgeInsets.only(left: 12),
           child: TextField(
             controller: _searchController,
-            onChanged: _onSearch,
+            onChanged: _onSearchChanged,
             autofocus: true,
             style: theme.textTheme.bodyMedium,
             decoration: InputDecoration(
@@ -69,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       onPressed: () {
                         _searchController.clear();
-                        _onSearch('');
+                        setState(() {});
                       },
                     )
                   : null,
@@ -91,87 +101,110 @@ class _SearchPageState extends State<SearchPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: _searchResults.isEmpty
-          ? _buildInitialOrEmptyState()
-          : GridView.builder(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.65,
-              ),
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                final product = _searchResults[index];
-                return ProductCard(
-                  product: product,
-                  onTap: () => context.push(
-                    AppRouter.productDetails,
-                    extra: product,
-                  ),
-                );
-              },
-            ),
+      body: BlocBuilder<ProductsBloc, ProductsState>(
+        builder: (context, state) {
+          if (state is ProductsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ProductsError) {
+            return Center(child: Text(state.message));
+          }
+
+          if (state is ProductsLoaded) {
+            if (state.products.isEmpty) {
+              return _buildEmptyState();
+            }
+            return _buildResultsGrid(state.products);
+          }
+
+          return _buildInitialState();
+        },
+      ),
     );
   }
 
-  Widget _buildInitialOrEmptyState() {
+  Widget _buildInitialState() {
     final theme = Theme.of(context);
-    if (_searchController.text.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Recently Searched',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(28.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recently Searched',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: MockData.recentSearches.map((tag) {
-                return GestureDetector(
-                  onTap: () {
-                    _searchController.text = tag;
-                    _onSearch(tag);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(999),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      tag,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: MockData.recentSearches.map((tag) {
+              return GestureDetector(
+                onTap: () {
+                  _searchController.text = tag;
+                  context.read<ProductsBloc>().add(GetProductsRequested(searchQuery: tag));
+                  setState(() {});
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(999),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
+                    ],
+                  ),
+                  child: Text(
+                    tag,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      );
-    }
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildResultsGrid(List<Product> products) {
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 16,
+        childAspectRatio: 0.65,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return ProductCard(
+          product: product,
+          onTap: () => context.push(
+            AppRouter.productDetails,
+            extra: product,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

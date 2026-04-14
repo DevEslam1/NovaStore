@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:newstore/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:newstore/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:newstore/features/profile/presentation/bloc/address_bloc.dart';
 import 'package:newstore/core/services/notification_service.dart';
 import 'firebase_options.dart';

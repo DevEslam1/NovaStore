@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:newstore/shared/widgets/custom_button.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:newstore/features/profile/presentation/bloc/address_bloc.dart';
+import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -54,165 +55,178 @@ class _CheckoutPageState extends State<CheckoutPage> {
             }
           }
         },
-        builder: (context, state) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Shipping Address
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        builder: (context, addressState) {
+          return BlocBuilder<CartBloc, CartState>(
+            builder: (context, cartState) {
+              if (cartState.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final items = cartState.items;
+              final subtotal = cartState.totalPrice;
+              const shippingFee = 0.0;
+              final tax = subtotal * 0.05;
+              final total = subtotal + shippingFee + tax;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionHeader(title: 'Shipping Address', theme: theme),
-                    TextButton(
-                      onPressed: () => context.push(AppRouter.addAddress),
-                      child: const Text('Add New'),
+                    // Shipping Address
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _SectionHeader(title: 'Shipping Address', theme: theme),
+                        TextButton(
+                          onPressed: () => context.push(AppRouter.addAddress),
+                          child: const Text('Add New'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                if (state is AddressLoading)
-                  const Center(child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(),
-                  ))
-                else if (state is AddressLoaded && state.addresses.isEmpty)
-                  _EmptyAddressPlaceholder(theme: theme)
-                else if (state is AddressLoaded)
-                  ...state.addresses.map((address) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _SelectableCard(
-                          title: address.label,
-                          subtitle: '${address.street}, ${address.city}',
-                          icon: _getIcon(address.label),
-                          isSelected: _selectedAddressId == address.id,
-                          onTap: () => setState(() => _selectedAddressId = address.id),
-                        ),
+                    const SizedBox(height: 12),
+                    if (addressState is AddressLoading)
+                      const Center(child: Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: CircularProgressIndicator(),
                       ))
-                else if (state is AddressError)
-                  Text('Error loading addresses: ${state.message}', 
-                    style: TextStyle(color: theme.colorScheme.error)),
-
-                const SizedBox(height: 36),
-
-                // Delivery Method
-                _SectionHeader(title: 'Delivery Method', theme: theme),
-                const SizedBox(height: 16),
-                _SelectableCard(
-                  title: 'Standard Delivery',
-                  subtitle: '3-5 business days · Free',
-                  icon: Icons.local_shipping_outlined,
-                  isSelected: true,
-                  onTap: () {},
-                ),
-                const SizedBox(height: 12),
-                _SelectableCard(
-                  title: 'Express Delivery',
-                  subtitle: '1-2 business days · \$12.00',
-                  icon: Icons.bolt_outlined,
-                  isSelected: false,
-                  onTap: () {},
-                ),
-
-                const SizedBox(height: 36),
-
-                // Payment Method
-                _SectionHeader(title: 'Payment Method', theme: theme),
-                const SizedBox(height: 16),
-                _SelectableCard(
-                  title: 'Credit Card',
-                  subtitle: '**** **** **** 4242',
-                  icon: Icons.credit_card_rounded,
-                  isSelected: true,
-                  onTap: () {},
-                ),
-                const SizedBox(height: 12),
-                _SelectableCard(
-                  title: 'Apple Pay',
-                  subtitle: 'Linked to Xdev.eslam@gmail.com',
-                  icon: Icons.apple_rounded,
-                  isSelected: false,
-                  onTap: () {},
-                ),
-
-                const SizedBox(height: 36),
-
-                // Order Summary
-                _SectionHeader(title: 'Order Summary', theme: theme),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
-                        blurRadius: 24,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _SummaryRow(
-                        label: 'Subtotal',
-                        value: '\$948.00',
-                        theme: theme,
-                      ),
-                      const SizedBox(height: 10),
-                      _SummaryRow(
-                        label: 'Shipping',
-                        value: 'Free',
-                        theme: theme,
-                        isHighlighted: true,
-                      ),
-                      const SizedBox(height: 10),
-                      _SummaryRow(label: 'Tax', value: '\$45.00', theme: theme),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Divider(
-                          color: theme.colorScheme.outlineVariant.withValues(
-                            alpha: 0.2,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
+                    else if (addressState is AddressLoaded && addressState.addresses.isEmpty)
+                      _EmptyAddressPlaceholder(theme: theme)
+                    else if (addressState is AddressLoaded)
+                      ...addressState.addresses.map((address) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _SelectableCard(
+                              title: address.label,
+                              subtitle: '${address.street}, ${address.city}',
+                              icon: _getIcon(address.label),
+                              isSelected: _selectedAddressId == address.id,
+                              onTap: () => setState(() => _selectedAddressId = address.id),
                             ),
-                          ),
-                          Text(
-                            '\$993.00',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                          ))
+                    else if (addressState is AddressError)
+                      Text('Error loading addresses: ${addressState.message}', 
+                        style: TextStyle(color: theme.colorScheme.error)),
+
+                    const SizedBox(height: 36),
+
+                    // Delivery Method
+                    _SectionHeader(title: 'Delivery Method', theme: theme),
+                    const SizedBox(height: 16),
+                    _SelectableCard(
+                      title: 'Standard Delivery',
+                      subtitle: '3-5 business days · Free',
+                      icon: Icons.local_shipping_outlined,
+                      isSelected: true,
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 12),
+                    _SelectableCard(
+                      title: 'Express Delivery',
+                      subtitle: '1-2 business days · \$12.00',
+                      icon: Icons.bolt_outlined,
+                      isSelected: false,
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 36),
+
+                    // Order Summary
+                    _SectionHeader(title: 'Order Summary', theme: theme),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+                            blurRadius: 24,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
+                      child: Column(
+                        children: [
+                          _SummaryRow(
+                            label: 'Subtotal',
+                            value: '\$${subtotal.toStringAsFixed(2)}',
+                            theme: theme,
+                          ),
+                          const SizedBox(height: 10),
+                          _SummaryRow(
+                            label: 'Shipping',
+                            value: 'Free',
+                            theme: theme,
+                            isHighlighted: true,
+                          ),
+                          const SizedBox(height: 10),
+                          _SummaryRow(
+                            label: 'Tax', 
+                            value: '\$${tax.toStringAsFixed(2)}', 
+                            theme: theme,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Divider(
+                              color: theme.colorScheme.outlineVariant.withValues(
+                                alpha: 0.2,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Total',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                '\$${total.toStringAsFixed(2)}',
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
 
-                const SizedBox(height: 40),
-                CustomButton(
-                  text: 'Continue to Payment',
-                  isSecondary: true,
-                  icon: Icons.payment_rounded,
-                  onPressed: _selectedAddressId == null ? null : () {
-                    context.push(AppRouter.payment);
-                  },
-                  width: double.infinity,
+                    const SizedBox(height: 40),
+                    CustomButton(
+                      text: 'Continue to Payment',
+                      isSecondary: true,
+                      icon: Icons.payment_rounded,
+                      onPressed: _selectedAddressId == null
+                          ? null
+                          : () {
+                              final selectedAddress = (addressState as AddressLoaded)
+                                  .addresses
+                                  .firstWhere((a) => a.id == _selectedAddressId);
+                              
+                              context.push(
+                                AppRouter.payment,
+                                extra: {
+                                  'items': items,
+                                  'subtotal': subtotal,
+                                  'shippingFee': shippingFee,
+                                  'tax': tax,
+                                  'total': total,
+                                  'shippingAddress': '${selectedAddress.street}, ${selectedAddress.city}',
+                                },
+                              );
+                            },
+                      width: double.infinity,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

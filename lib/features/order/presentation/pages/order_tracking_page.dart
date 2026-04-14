@@ -96,54 +96,55 @@ class OrderTrackingPage extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        // Estimated Arrival Card
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.local_shipping_outlined,
-                                color: Colors.white.withValues(alpha: 0.8),
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Estimated Arrival',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: Colors.white.withValues(alpha: 0.6),
-                                      letterSpacing: 0.5,
+                                // Estimated Arrival Card
+                                if (status != 'Cancelled' && status != 'Delivered')
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.local_shipping_outlined,
+                                          color: Colors.white.withValues(alpha: 0.8),
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Current Status',
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: Colors.white.withValues(alpha: 0.6),
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              status,
+                                              style: theme.textTheme.titleSmall?.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Today, 2:30 PM - 4:00 PM',
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
-          ),
 
           // ── Content Body ──
           SliverToBoxAdapter(
@@ -201,43 +202,7 @@ class OrderTrackingPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    _TimelineStep(
-                      title: 'Delivered',
-                      subtitle: 'Pending arrival at destination',
-                      time: null,
-                      stepState: _StepState.upcoming,
-                      isFirst: true,
-                      theme: theme,
-                    ),
-                    _TimelineStep(
-                      title: 'Out for Delivery',
-                      subtitle: 'Package is with the local courier and will be delivered shortly.',
-                      time: 'Oct 26 · 09:15 AM',
-                      stepState: _StepState.active,
-                      theme: theme,
-                    ),
-                    _TimelineStep(
-                      title: 'Shipped from Warehouse',
-                      subtitle: 'New Jersey Transit Center',
-                      time: 'Oct 25 · 11:30 PM',
-                      stepState: _StepState.completed,
-                      theme: theme,
-                    ),
-                    _TimelineStep(
-                      title: 'Order Processing',
-                      subtitle: 'Items verified and packed',
-                      time: 'Oct 24 · 04:45 PM',
-                      stepState: _StepState.completed,
-                      theme: theme,
-                    ),
-                    _TimelineStep(
-                      title: 'Order Placed',
-                      subtitle: 'Confirmation sent via email',
-                      time: 'Oct 24 · 02:10 PM',
-                      stepState: _StepState.completed,
-                      isLast: true,
-                      theme: theme,
-                    ),
+                    ..._buildTimeline(theme),
 
                     const SizedBox(height: 32),
 
@@ -269,7 +234,61 @@ class OrderTrackingPage extends StatelessWidget {
       ),
     );
   }
+
+  List<Widget> _buildTimeline(ThemeData theme) {
+    if (status == 'Cancelled') {
+      return [
+        _TimelineStep(
+          title: 'Cancelled',
+          subtitle: 'The order has been cancelled.',
+          time: date,
+          stepState: _StepState.completed,
+          isFirst: true,
+          isLast: true,
+          theme: theme,
+        )
+      ];
+    }
+
+    final steps = [
+      {'title': 'Order Placed', 'subtitle': 'Confirmation sent via email'},
+      {'title': 'Confirmed', 'subtitle': 'Order has been verified'},
+      {'title': 'Processing', 'subtitle': 'Items are being packed'},
+      {'title': 'Shipped', 'subtitle': 'Handed over to carrier'},
+      {'title': 'Delivered', 'subtitle': 'Arrived at destination'},
+    ];
+
+    int currentLevel = 0;
+    if (status == 'Confirmed') currentLevel = 1;
+    else if (status == 'Processing') currentLevel = 2;
+    else if (status == 'Shipped') currentLevel = 3;
+    else if (status == 'Delivered') currentLevel = 4;
+
+    List<Widget> stepWidgets = [];
+    for (int i = steps.length - 1; i >= 0; i--) {
+      _StepState stepState;
+      if (i < currentLevel) {
+        stepState = _StepState.completed;
+      } else if (i == currentLevel) {
+        stepState = _StepState.active;
+      } else {
+        stepState = _StepState.upcoming;
+      }
+      
+      stepWidgets.add(_TimelineStep(
+        title: steps[i]['title']!,
+        subtitle: steps[i]['subtitle']!,
+        time: (i <= currentLevel && i == 0) ? date : null,
+        stepState: stepState,
+        isFirst: i == steps.length - 1, 
+        isLast: i == 0, 
+        theme: theme,
+      ));
+    }
+    return stepWidgets;
+  }
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // Info Card (Shipping To / Carrier Info)

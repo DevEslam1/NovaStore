@@ -11,7 +11,15 @@ abstract class ProductsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetProductsRequested extends ProductsEvent {}
+class GetProductsRequested extends ProductsEvent {
+  final String? category;
+  final String? searchQuery;
+
+  const GetProductsRequested({this.category, this.searchQuery});
+
+  @override
+  List<Object?> get props => [category, searchQuery];
+}
 
 class LoadMoreProductsRequested extends ProductsEvent {}
 
@@ -33,12 +41,16 @@ class ProductsLoaded extends ProductsState {
   final bool hasMore;
   final DocumentSnapshot? lastDoc;
   final bool isLoadingMore;
+  final String? category;
+  final String? searchQuery;
 
   const ProductsLoaded({
     required this.products,
     required this.hasMore,
     this.lastDoc,
     this.isLoadingMore = false,
+    this.category,
+    this.searchQuery,
   });
 
   ProductsLoaded copyWith({
@@ -46,17 +58,21 @@ class ProductsLoaded extends ProductsState {
     bool? hasMore,
     DocumentSnapshot? lastDoc,
     bool? isLoadingMore,
+    String? category,
+    String? searchQuery,
   }) {
     return ProductsLoaded(
       products: products ?? this.products,
       hasMore: hasMore ?? this.hasMore,
       lastDoc: lastDoc ?? this.lastDoc,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      category: category ?? this.category,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
   @override
-  List<Object?> get props => [products, hasMore, lastDoc, isLoadingMore];
+  List<Object?> get props => [products, hasMore, lastDoc, isLoadingMore, category, searchQuery];
 }
 
 class ProductsError extends ProductsState {
@@ -73,16 +89,20 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   ProductsBloc({required this.getProductsUseCase}) : super(ProductsInitial()) {
     on<GetProductsRequested>((event, emit) async {
-      if (state is ProductsLoaded || state is ProductsLoading) return;
-
       emit(ProductsLoading());
-      final result = await getProductsUseCase(limit: _pageSize);
+      final result = await getProductsUseCase(
+        limit: _pageSize,
+        category: event.category,
+        searchQuery: event.searchQuery,
+      );
       result.fold(
         (failure) => emit(ProductsError(failure.message)),
         (paginatedResult) => emit(ProductsLoaded(
           products: paginatedResult.products,
           hasMore: paginatedResult.hasMore,
           lastDoc: paginatedResult.lastDoc,
+          category: event.category,
+          searchQuery: event.searchQuery,
         )),
       );
     });
@@ -100,6 +120,8 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       final result = await getProductsUseCase(
         limit: _pageSize,
         lastDoc: currentState.lastDoc,
+        category: currentState.category,
+        searchQuery: currentState.searchQuery,
       );
 
       result.fold(
@@ -114,14 +136,29 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     });
 
     on<RefreshProductsRequested>((event, emit) async {
+      final currentState = state;
+      String? category;
+      String? searchQuery;
+
+      if (currentState is ProductsLoaded) {
+        category = currentState.category;
+        searchQuery = currentState.searchQuery;
+      }
+
       emit(ProductsLoading());
-      final result = await getProductsUseCase(limit: _pageSize);
+      final result = await getProductsUseCase(
+        limit: _pageSize,
+        category: category,
+        searchQuery: searchQuery,
+      );
       result.fold(
         (failure) => emit(ProductsError(failure.message)),
         (paginatedResult) => emit(ProductsLoaded(
           products: paginatedResult.products,
           hasMore: paginatedResult.hasMore,
           lastDoc: paginatedResult.lastDoc,
+          category: category,
+          searchQuery: searchQuery,
         )),
       );
     });

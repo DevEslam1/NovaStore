@@ -17,12 +17,22 @@ class ProductRepositoryImpl implements ProductRepository {
   });
 
   @override
-  Future<Either<Failure, PaginatedProductsResult>> getProducts({int limit = 10, DocumentSnapshot? lastDoc}) async {
+  Future<Either<Failure, PaginatedProductsResult>> getProducts({
+    int limit = 10,
+    DocumentSnapshot? lastDoc,
+    String? category,
+    String? searchQuery,
+  }) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection.'));
     }
     try {
-      final paginatedProducts = await remoteDataSource.getProducts(limit: limit, lastDoc: lastDoc);
+      final paginatedProducts = await remoteDataSource.getProducts(
+        limit: limit,
+        lastDoc: lastDoc,
+        category: category,
+        searchQuery: searchQuery,
+      );
       return Right(PaginatedProductsResult(
         products: paginatedProducts.products,
         lastDoc: paginatedProducts.lastDoc,

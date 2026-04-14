@@ -16,7 +16,12 @@ class PaginatedProducts {
 }
 
 abstract class ProductRemoteDataSource {
-  Future<PaginatedProducts> getProducts({int limit = 10, DocumentSnapshot? lastDoc});
+  Future<PaginatedProducts> getProducts({
+    int limit = 10,
+    DocumentSnapshot? lastDoc,
+    String? category,
+    String? searchQuery,
+  });
   Future<ProductModel> getProductById(String id);
 }
 
@@ -26,12 +31,33 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ProductRemoteDataSourceImpl(this.firestore);
 
   @override
-  Future<PaginatedProducts> getProducts({int limit = 10, DocumentSnapshot? lastDoc}) async {
+  Future<PaginatedProducts> getProducts({
+    int limit = 10,
+    DocumentSnapshot? lastDoc,
+    String? category,
+    String? searchQuery,
+  }) async {
     try {
       Query query = firestore
-          .collection(ApiEndpoints.products)
-          .orderBy('createdAt', descending: true)
-          .limit(limit);
+          .collection(ApiEndpoints.products);
+
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        // Firestore requires the first orderBy to match an inequality filter field
+        query = query
+            .where('name', isGreaterThanOrEqualTo: searchQuery)
+            .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff')
+            .orderBy('name');
+      } else if (category != null && category.isNotEmpty) {
+        query = query.where('category', isEqualTo: category);
+        // By omitting orderBy('createdAt') here, we bypass the need for a 
+        // manual composite index in Firebase Console during development.
+        // If sorting is required later, we can re-add it and create the index.
+      } else {
+        // Default home page query (all products)
+        query = query.orderBy('createdAt', descending: true);
+      }
+
+      query = query.limit(limit);
 
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc);

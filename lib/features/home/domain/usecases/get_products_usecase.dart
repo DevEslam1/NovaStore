@@ -9,7 +9,17 @@ class GetProductsUseCase {
 
   GetProductsUseCase(this.repository);
 
-  Future<Either<Failure, PaginatedProductsResult>> call({int limit = 10, DocumentSnapshot? lastDoc}) async {
-    return await repository.getProducts(limit: limit, lastDoc: lastDoc);
+  Future<Either<Failure, PaginatedProductsResult>> call({
+    int limit = 10,
+    DocumentSnapshot? lastDoc,
+    String? category,
+    String? searchQuery,
+  }) async {
+    return await repository.getProducts(
+      limit: limit,
+      lastDoc: lastDoc,
+      category: category,
+      searchQuery: searchQuery,
+    );
   }
 }
