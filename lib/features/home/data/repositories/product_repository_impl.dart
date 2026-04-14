@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import '../datasources/product_remote_datasource.dart';
-import '../../domain/repositories/product_repository.dart';
-import '../../../../shared/domain/entities/product.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/network/network_info.dart';
+import 'package:newstore/features/home/data/datasources/product_remote_datasource.dart';
+import 'package:newstore/features/home/domain/repositories/product_repository.dart';
+import 'package:newstore/shared/domain/entities/product.dart';
+import 'package:newstore/core/error/failures.dart';
+import 'package:newstore/core/error/exceptions.dart';
+import 'package:newstore/core/network/network_info.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;

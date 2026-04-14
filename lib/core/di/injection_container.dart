@@ -86,7 +86,7 @@ Future<void> init() async {
 
   //! Features - Core & Common
   // Blocs
-  sl.registerLazySingleton(() => AppConfigBloc());
+  sl.registerLazySingleton(() => AppConfigBloc(sharedPreferences: sl()));
   sl.registerLazySingleton(() => CartBloc(repository: sl()));
   sl.registerLazySingleton(() => OrdersBloc(repository: sl()));
 

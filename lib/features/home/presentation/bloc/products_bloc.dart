@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/usecases/get_products_usecase.dart';
-import '../../../../shared/domain/entities/product.dart';
+import 'package:newstore/shared/domain/entities/product.dart';
 
 // Events
 abstract class ProductsEvent extends Equatable {

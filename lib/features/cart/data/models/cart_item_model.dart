@@ -1,5 +1,5 @@
-import '../../domain/entities/cart_item.dart';
-import '../../../../shared/data/models/product_model.dart';
+import 'package:newstore/features/cart/domain/entities/cart_item.dart';
+import 'package:newstore/shared/data/models/product_model.dart';
 
 class CartItemModel extends CartItem {
   const CartItemModel({

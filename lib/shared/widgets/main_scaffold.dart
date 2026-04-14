@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/cart/presentation/pages/cart_page.dart';
-import '../../features/orders/presentation/pages/orders_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
-import '../../features/shop/presentation/pages/shop_page.dart';
+import 'package:newstore/features/home/presentation/pages/home_page.dart';
+import 'package:newstore/features/cart/presentation/pages/cart_page.dart';
+import 'package:newstore/features/orders/presentation/pages/orders_page.dart';
+import 'package:newstore/features/profile/presentation/pages/profile_page.dart';
+import 'package:newstore/features/shop/presentation/pages/shop_page.dart';
 
 /// Main scaffold with "Floating Island" bottom nav.
 ///
@@ -14,9 +14,6 @@ import '../../features/shop/presentation/pages/shop_page.dart';
 ///   • Pill-shaped with a 10% outlineVariant ghost-border.
 ///   • Active state: secondary dot indicator below icon.
 ///   • Ambient shadow (40px blur, 4% on-surface).
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../features/home/presentation/bloc/products_bloc.dart';
-import '../../core/di/injection_container.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});

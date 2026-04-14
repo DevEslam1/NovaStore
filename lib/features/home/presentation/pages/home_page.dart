@@ -5,7 +5,7 @@ import 'package:newstore/shared/widgets/product_card.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:newstore/core/localization/app_localizations.dart';
-import '../bloc/products_bloc.dart';
+import 'package:newstore/features/home/presentation/bloc/products_bloc.dart';
 
 /// Home & Discovery screen following the "NovaStore" design system.
 class HomePage extends StatelessWidget {

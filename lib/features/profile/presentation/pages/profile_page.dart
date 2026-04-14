@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/app_config_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import 'package:newstore/core/utils/firebase_seeder.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -122,17 +124,99 @@ class ProfilePage extends StatelessWidget {
                       },
                     ),
                     _ProfileTile(
-                      icon: Icons.dark_mode_outlined,
-                      title: 'Dark Mode',
-                      isSwitch: true,
-                      switchValue: configState.themeMode == ThemeMode.dark,
-                      onSwitchChanged: (value) {
-                        context.read<AppConfigBloc>().add(
-                          ToggleTheme(value ? ThemeMode.dark : ThemeMode.light),
+                      icon: Icons.palette_outlined,
+                      title: 'App Theme',
+                      trailing: configState.themeMode == ThemeMode.system
+                          ? 'System'
+                          : configState.themeMode == ThemeMode.dark
+                              ? 'Dark'
+                              : 'Light',
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: theme.colorScheme.surface,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                          ),
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Choose Theme',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _ThemeOption(
+                                  title: 'System Default',
+                                  icon: Icons.settings_brightness_rounded,
+                                  isSelected: configState.themeMode == ThemeMode.system,
+                                  onTap: () {
+                                    context.read<AppConfigBloc>().add(const ToggleTheme(ThemeMode.system));
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                _ThemeOption(
+                                  title: 'Light Mode',
+                                  icon: Icons.light_mode_rounded,
+                                  isSelected: configState.themeMode == ThemeMode.light,
+                                  onTap: () {
+                                    context.read<AppConfigBloc>().add(const ToggleTheme(ThemeMode.light));
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                _ThemeOption(
+                                  title: 'Dark Mode',
+                                  icon: Icons.dark_mode_rounded,
+                                  isSelected: configState.themeMode == ThemeMode.dark,
+                                  onTap: () {
+                                    context.read<AppConfigBloc>().add(const ToggleTheme(ThemeMode.dark));
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
-                      onTap: () {},
                     ),
+
+                    if (kDebugMode) ...[
+                      const SizedBox(height: 28),
+                      _SectionTitle(title: 'Developer Tools', theme: theme),
+                      const SizedBox(height: 12),
+                      _ProfileTile(
+                        icon: Icons.cloud_upload_outlined,
+                        title: 'Seed Products to Firebase',
+                        onTap: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          try {
+                            messenger.showSnackBar(
+                              const SnackBar(content: Text('Seeding products...')),
+                            );
+                            await FirebaseSeeder.seedProducts();
+                            if (!context.mounted) return;
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text('Products seeded successfully!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to seed: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
 
                     const SizedBox(height: 28),
                     _ProfileTile(
@@ -176,9 +260,6 @@ class _ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? trailing;
-  final bool isSwitch;
-  final bool? switchValue;
-  final Function(bool)? onSwitchChanged;
   final bool isDestructive;
   final VoidCallback onTap;
 
@@ -186,9 +267,6 @@ class _ProfileTile extends StatelessWidget {
     required this.icon,
     required this.title,
     this.trailing,
-    this.isSwitch = false,
-    this.switchValue,
-    this.onSwitchChanged,
     this.isDestructive = false,
     required this.onTap,
   });
@@ -233,22 +311,53 @@ class _ProfileTile extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        trailing: isSwitch
-            ? Switch(value: switchValue ?? false, onChanged: onSwitchChanged)
-            : (trailing != null
-                  ? Text(
-                      trailing!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    )
-                  : Icon(
-                      Icons.chevron_right_rounded,
-                      size: 20,
-                      color: theme.colorScheme.outline,
-                    )),
-        onTap: isSwitch ? null : onTap,
+        trailing: trailing != null
+               ? Text(
+                   trailing!,
+                   style: theme.textTheme.bodySmall?.copyWith(
+                     color: theme.colorScheme.outline,
+                   ),
+                 )
+               : Icon(
+                   Icons.chevron_right_rounded,
+                   size: 20,
+                   color: theme.colorScheme.outline,
+                 ),
+        onTap: onTap,
       ),
+    );
+  }
+}
+
+class _ThemeOption extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _ThemeOption({
+    required this.title,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Icon(icon, color: isSelected ? theme.colorScheme.primary : null),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? theme.colorScheme.primary : null,
+          fontWeight: isSelected ? FontWeight.w700 : null,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
+          : null,
+      onTap: onTap,
     );
   }
 }

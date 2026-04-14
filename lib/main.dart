@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => di.sl<AppConfigBloc>()),
+        BlocProvider(create: (context) => di.sl<AppConfigBloc>()..add(LoadConfig())),
         BlocProvider(create: (context) => di.sl<CartBloc>()..add(LoadCart())),
         BlocProvider(create: (context) => di.sl<OrdersBloc>()),
         BlocProvider(

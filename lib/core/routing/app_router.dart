@@ -12,7 +12,7 @@ import '../../features/cart/presentation/pages/payment_page.dart';
 import '../../features/shop/presentation/pages/search_page.dart';
 import '../../features/orders/presentation/pages/order_tracking_page.dart';
 import '../../shared/widgets/main_scaffold.dart';
-import '../../shared/domain/entities/product.dart';
+import 'package:newstore/shared/domain/entities/product.dart';
 import '../di/injection_container.dart';
 
 class AppRouter {

@@ -1,4 +1,4 @@
-import '../../domain/entities/product.dart';
+import 'package:newstore/shared/domain/entities/product.dart';
 
 class ProductModel extends Product {
   const ProductModel({

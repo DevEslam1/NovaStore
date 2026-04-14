@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../domain/entities/product.dart';
+import 'package:newstore/shared/domain/entities/product.dart';
 
 /// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
