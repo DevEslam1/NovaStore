@@ -24,6 +24,11 @@ import '../../features/orders/domain/repositories/order_repository.dart';
 import '../../features/orders/data/repositories/order_repository_impl.dart';
 import '../../features/orders/data/datasources/order_remote_datasource.dart';
 import '../../features/orders/presentation/bloc/orders_bloc.dart';
+import '../../features/profile/presentation/bloc/address_bloc.dart';
+import '../../features/profile/domain/repositories/address_repository.dart';
+import '../../features/profile/data/repositories/address_repository_impl.dart';
+import '../../features/profile/data/datasources/address_remote_datasource.dart';
+import '../services/notification_service.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
@@ -89,9 +94,27 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AppConfigBloc(sharedPreferences: sl()));
   sl.registerLazySingleton(() => CartBloc(repository: sl()));
   sl.registerLazySingleton(() => OrdersBloc(repository: sl()));
+  sl.registerLazySingleton(() => AddressBloc(repository: sl()));
+
+  // Repositories
+  sl.registerLazySingleton<AddressRepository>(
+    () => AddressRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(
+      firestore: sl(),
+      auth: sl(),
+    ),
+  );
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+  sl.registerLazySingleton(() => NotificationService());
   sl.registerLazySingleton(() => Dio());
 
   //! External

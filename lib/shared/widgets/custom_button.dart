@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 /// Uses a 0.97 scale-down press effect instead of color-shifting.
 class CustomButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isSecondary;
   final bool isTertiary;
   final double? width;
@@ -20,7 +20,7 @@ class CustomButton extends StatefulWidget {
   const CustomButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.isSecondary = false,
     this.isTertiary = false,
     this.width,

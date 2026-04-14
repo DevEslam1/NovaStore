@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/app_config_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import 'package:newstore/core/utils/firebase_seeder.dart';
+import 'package:newstore/core/routing/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -91,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                     _ProfileTile(
                       icon: Icons.location_on_outlined,
                       title: 'Shipping Addresses',
-                      onTap: () {},
+                      onTap: () => context.push(AppRouter.addresses),
                     ),
                     _ProfileTile(
                       icon: Icons.payment_rounded,

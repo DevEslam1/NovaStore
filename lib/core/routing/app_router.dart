@@ -12,6 +12,9 @@ import '../../features/cart/presentation/pages/payment_page.dart';
 import '../../features/shop/presentation/pages/search_page.dart';
 import '../../features/orders/presentation/pages/order_tracking_page.dart';
 import '../../shared/widgets/main_scaffold.dart';
+import '../../features/profile/presentation/pages/addresses_page.dart';
+import '../../features/profile/presentation/pages/add_address_page.dart';
+import '../../features/profile/domain/entities/address_entity.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import '../di/injection_container.dart';
 
@@ -31,6 +34,8 @@ class AppRouter {
   static const String payment = '/payment';
   static const String search = '/search';
   static const String orderTracking = '/order-tracking';
+  static const String addresses = '/addresses';
+  static const String addAddress = '/add-address';
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
@@ -120,6 +125,17 @@ class AppRouter {
             total: args['total'] as double,
             itemCount: args['items'] as int,
           );
+        },
+      ),
+      GoRoute(
+        path: addresses,
+        builder: (context, state) => const AddressesPage(),
+      ),
+      GoRoute(
+        path: addAddress,
+        builder: (context, state) {
+          final address = state.extra as AddressEntity?;
+          return AddAddressPage(address: address);
         },
       ),
     ],

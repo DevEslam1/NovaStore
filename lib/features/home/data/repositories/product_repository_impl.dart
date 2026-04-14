@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:newstore/features/home/data/datasources/product_remote_datasource.dart';
 import 'package:newstore/features/home/domain/repositories/product_repository.dart';
@@ -16,13 +17,17 @@ class ProductRepositoryImpl implements ProductRepository {
   });
 
   @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  Future<Either<Failure, PaginatedProductsResult>> getProducts({int limit = 10, DocumentSnapshot? lastDoc}) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection.'));
     }
     try {
-      final products = await remoteDataSource.getProducts();
-      return Right(products);
+      final paginatedProducts = await remoteDataSource.getProducts(limit: limit, lastDoc: lastDoc);
+      return Right(PaginatedProductsResult(
+        products: paginatedProducts.products,
+        lastDoc: paginatedProducts.lastDoc,
+        hasMore: paginatedProducts.hasMore,
+      ));
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     }

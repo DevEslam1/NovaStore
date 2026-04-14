@@ -4,6 +4,7 @@ import '../bloc/cart_bloc.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
+import '../../../../shared/widgets/empty_state_widget.dart';
 
 /// Shopping Cart — "NovaStore" design.
 ///
@@ -31,49 +32,12 @@ class CartPage extends StatelessWidget {
       body: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           if (state.items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHigh,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.shopping_bag_outlined,
-                      size: 44,
-                      color: theme.colorScheme.outline,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Your cart is empty',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Browse our curated collection to find\nsomething you love.',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.outline,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  CustomButton(
-                    text: 'Explore Products',
-                    onPressed: () {},
-                    width: 200,
-                    height: 48,
-                  ),
-                ],
-              ),
+            return EmptyStateWidget(
+              title: 'Your cart is empty',
+              message: 'Browse our curated collection to find something you love.',
+              icon: Icons.shopping_bag_outlined,
+              actionLabel: 'Explore Products',
+              onAction: () => context.go(AppRouter.home),
             );
           }
 
