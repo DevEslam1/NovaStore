@@ -18,11 +18,13 @@ import '../../core/utils/haptic_helper.dart';
 class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
+  final bool useHero;
 
   const ProductCard({
     super.key,
     required this.product,
     required this.onTap,
+    this.useHero = true,
   });
 
   @override
@@ -50,9 +52,21 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: 'product-image-${product.id}',
-                    child: ClipRRect(
+                  if (useHero)
+                    Hero(
+                      tag: 'product-image-${product.id}',
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(24),
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: _buildImage(theme),
+                        ),
+                      ),
+                    )
+                  else
+                    ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(24),
                       ),
@@ -61,7 +75,6 @@ class ProductCard extends StatelessWidget {
                         child: _buildImage(theme),
                       ),
                     ),
-                  ),
                   Positioned(
                     top: 8,
                     right: 8,
@@ -133,20 +146,30 @@ class ProductCard extends StatelessWidget {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Hero(
-                            tag: 'product-price-${product.id}',
-                            child: Material(
-                              type: MaterialType.transparency,
-                              child: Text(
-                                '\$${product.price.toStringAsFixed(2)}',
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: theme.colorScheme.secondary,
-                                  letterSpacing: 0,
+                          if (useHero)
+                            Hero(
+                              tag: 'product-price-${product.id}',
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: Text(
+                                  '\$${product.price.toStringAsFixed(2)}',
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: theme.colorScheme.secondary,
+                                    letterSpacing: 0,
+                                  ),
                                 ),
                               ),
+                            )
+                          else
+                            Text(
+                              '\$${product.price.toStringAsFixed(2)}',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: theme.colorScheme.secondary,
+                                letterSpacing: 0,
+                              ),
                             ),
-                          ),
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             transitionBuilder: (child, animation) {

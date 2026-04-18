@@ -7,6 +7,8 @@ import '../../../../core/routing/app_router.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../core/utils/responsive_layout.dart';
 import '../../../../core/utils/haptic_helper.dart';
+import '../../../../shared/widgets/recommended_section.dart';
+import '../../../../shared/widgets/favorites_section.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -58,6 +60,8 @@ class CartPage extends StatelessWidget {
             }
 
             final cartList = ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.fromLTRB(
                 ResponsiveLayout.getHorizontalPadding(context),
                 8,
@@ -74,7 +78,17 @@ class CartPage extends StatelessWidget {
             if (isCompact) {
               return Column(
                 children: [
-                  Expanded(child: cartList),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          cartList,
+                          const FavoritesSection(title: 'Your Favorites'),
+                          const RecommendedSection(title: 'You Might Also Like'),
+                        ],
+                      ),
+                    ),
+                  ),
                   _OrderSummary(state: state, isCompact: true),
                 ],
               );
@@ -90,7 +104,15 @@ class CartPage extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 6,
-                      child: cartList,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            cartList,
+                            const FavoritesSection(title: 'Your Favorites'),
+                            const RecommendedSection(title: 'You Might Also Like'),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 48),
                     Expanded(

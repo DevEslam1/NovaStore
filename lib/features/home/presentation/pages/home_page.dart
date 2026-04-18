@@ -71,6 +71,12 @@ class _HomePageState extends State<HomePage> {
 
           if (state is ProductsLoaded) {
             final allProducts = state.products;
+            
+            // ── Defensive Hero Management ──
+            // Track which product IDs have already been used for a Hero on this screen
+            // to prevent crashes due to duplicate tags in the same subtree.
+            final usedHeroIds = <String>{};
+
             // Simple partitioning for demonstration
             final flashDeals = allProducts.take(3).toList();
             final recommended = allProducts.skip(3).toList();
@@ -329,18 +335,20 @@ class _HomePageState extends State<HomePage> {
                             showViewAll: true,
                           ),
                           SizedBox(
-                            height: 260,
+                            height: 320,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               padding: const EdgeInsets.symmetric(horizontal: 24),
                               itemCount: flashDeals.length,
                               itemBuilder: (context, index) {
                                 final p = flashDeals[index];
+                                bool canUseHero = usedHeroIds.add(p.id);
                                 return Container(
                                   width: 170,
                                   margin: const EdgeInsets.only(right: 16),
                                   child: ProductCard(
                                     product: p,
+                                    useHero: canUseHero,
                                     onTap: () => context.push(
                                       AppRouter.productDetails,
                                       extra: p,
@@ -379,8 +387,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final product = recommended[index];
+                          bool canUseHero = usedHeroIds.add(product.id);
                           return ProductCard(
                             product: product,
+                            useHero: canUseHero,
                             onTap: () => context.push(
                               AppRouter.productDetails,
                               extra: product,

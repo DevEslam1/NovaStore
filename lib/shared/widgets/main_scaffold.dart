@@ -70,38 +70,28 @@ class _MainScaffoldState extends State<MainScaffold> {
       selectedIndex: _currentIndex,
       onDestinationSelected: _onTabTapped,
       extended: isExpanded,
-      groupAlignment: 0.0,
-      leading: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: isExpanded
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.storefront_rounded,
-                      color: theme.colorScheme.primary, size: 32),
-                  const SizedBox(width: 12),
-                  Text(
-                    'NovaStore',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ],
-              )
-            : Icon(Icons.storefront_rounded,
-                color: theme.colorScheme.primary, size: 28),
-      ),
+      groupAlignment: -0.8, // Align towards the top
+      minWidth: 80,
+      minExtendedWidth: 240,
       backgroundColor: theme.colorScheme.surfaceContainerLowest,
-      selectedIconTheme: IconThemeData(color: theme.colorScheme.primary),
-      unselectedIconTheme: IconThemeData(color: theme.colorScheme.outline),
+      selectedIconTheme: IconThemeData(
+        color: theme.colorScheme.primary,
+        size: 26,
+      ),
+      unselectedIconTheme: IconThemeData(
+        color: theme.colorScheme.outline,
+        size: 26,
+      ),
+      indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+      useIndicator: true,
       selectedLabelTextStyle: TextStyle(
         color: theme.colorScheme.primary,
         fontWeight: FontWeight.bold,
+        fontSize: 13,
       ),
       unselectedLabelTextStyle: TextStyle(
         color: theme.colorScheme.outline,
+        fontSize: 13,
       ),
       destinations: const [
         NavigationRailDestination(

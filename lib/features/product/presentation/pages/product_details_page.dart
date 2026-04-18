@@ -7,6 +7,7 @@ import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dart';
 import '../../../../core/utils/responsive_layout.dart';
 import '../../../../core/utils/haptic_helper.dart';
+import '../../../../shared/widgets/recommended_section.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
@@ -52,7 +53,7 @@ class ProductDetailsPage extends StatelessWidget {
                   tag: 'product-image-${product.id}',
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(32),
-                    child: _buildProductImage(theme),
+                    child: _buildProductImage(theme, showThumbnails: true),
                   ),
                 ),
               ),
@@ -75,6 +76,7 @@ class ProductDetailsPage extends StatelessWidget {
                       _buildFeatures(theme),
                       const SizedBox(height: 48),
                       _buildBottomActions(context, theme, isLargeMenu: true),
+                      const RecommendedSection(title: 'Recommended for You'),
                     ],
                   ),
                 ),
@@ -171,6 +173,7 @@ class ProductDetailsPage extends StatelessWidget {
                   _buildDescription(theme),
                   const SizedBox(height: 28),
                   _buildFeatures(theme),
+                  const RecommendedSection(title: 'Recommended for You'),
                   const SizedBox(height: 120),
                 ],
               ),
@@ -379,14 +382,19 @@ class ProductDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage(ThemeData theme) {
-    return _ImageCarousel(product: product);
+  Widget _buildProductImage(ThemeData theme, {bool showThumbnails = false}) {
+    return _ImageCarousel(product: product, showThumbnails: showThumbnails);
   }
 }
 
 class _ImageCarousel extends StatefulWidget {
   final Product product;
-  const _ImageCarousel({required this.product});
+  final bool showThumbnails;
+  
+  const _ImageCarousel({
+    required this.product, 
+    this.showThumbnails = false,
+  });
 
   @override
   State<_ImageCarousel> createState() => _ImageCarouselState();
@@ -408,6 +416,15 @@ class _ImageCarouselState extends State<_ImageCarousel> {
     super.dispose();
   }
 
+  void _onThumbnailTap(int index) {
+    HapticHelper.light();
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -415,36 +432,84 @@ class _ImageCarouselState extends State<_ImageCarousel> {
         ? widget.product.images 
         : [widget.product.imageUrl];
 
-    return Stack(
+    return Column(
       children: [
-        PageView.builder(
-          controller: _pageController,
-          onPageChanged: (index) => setState(() => _currentIndex = index),
-          itemCount: images.length,
-          itemBuilder: (context, index) {
-            return _buildSingleImage(images[index], theme);
-          },
-        ),
-        if (images.length > 1)
-          Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                images.length,
-                (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: _currentIndex == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentIndex == index 
-                        ? theme.colorScheme.primary 
-                        : theme.colorScheme.primary.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(4),
+        Expanded(
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) => setState(() => _currentIndex = index),
+                itemCount: images.length,
+                itemBuilder: (context, index) {
+                  return _buildSingleImage(images[index], theme);
+                },
+              ),
+              if (images.length > 1 && !widget.showThumbnails)
+                Positioned(
+                  bottom: 40,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      images.length,
+                      (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: _currentIndex == index ? 24 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _currentIndex == index 
+                              ? theme.colorScheme.primary 
+                              : theme.colorScheme.primary.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
                   ),
+                ),
+            ],
+          ),
+        ),
+        if (images.length > 1 && widget.showThumbnails)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: SizedBox(
+              height: 70,
+              child: Center(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: images.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final isSelected = _currentIndex == index;
+                    return GestureDetector(
+                      onTap: () => _onThumbnailTap(index),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected 
+                                ? theme.colorScheme.primary 
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Opacity(
+                            opacity: isSelected ? 1.0 : 0.6,
+                            child: _buildSingleImage(images[index], theme),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

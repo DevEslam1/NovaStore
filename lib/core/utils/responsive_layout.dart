@@ -75,11 +75,11 @@ class ResponsiveLayout extends StatelessWidget {
     final type = getScreenType(context);
     switch (type) {
       case ScreenType.compact:
-        return 0.65;
+        return 0.62;
       case ScreenType.medium:
-        return 0.7;
+        return 0.65;
       case ScreenType.expanded:
-        return 0.75;
+        return 0.70;
     }
   }
 
