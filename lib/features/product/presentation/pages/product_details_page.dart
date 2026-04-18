@@ -33,7 +33,10 @@ class ProductDetailsPage extends StatelessWidget {
             HapticHelper.light();
             context.pop();
           },
-          icon: Icon(Icons.arrow_back_rounded, color: theme.colorScheme.primary),
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: theme.colorScheme.primary,
+          ),
         ),
         backgroundColor: theme.colorScheme.surfaceContainerLowest,
         elevation: 0,
@@ -42,7 +45,9 @@ class ProductDetailsPage extends StatelessWidget {
       body: Center(
         child: Container(
           constraints: BoxConstraints(maxWidth: maxWidth),
-          padding: EdgeInsets.symmetric(horizontal: ResponsiveLayout.getHorizontalPadding(context)),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveLayout.getHorizontalPadding(context),
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -107,11 +112,15 @@ class ProductDetailsPage extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
+                  color: theme.colorScheme.surfaceContainerLowest.withValues(
+                    alpha: 0.85,
+                  ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.06,
+                      ),
                       blurRadius: 12,
                     ),
                   ],
@@ -127,11 +136,15 @@ class ProductDetailsPage extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.85),
+                  color: theme.colorScheme.surfaceContainerLowest.withValues(
+                    alpha: 0.85,
+                  ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.06,
+                      ),
                       blurRadius: 12,
                     ),
                   ],
@@ -181,7 +194,11 @@ class ProductDetailsPage extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomActions(context, theme, isLargeMenu: false),
+      bottomNavigationBar: _buildBottomActions(
+        context,
+        theme,
+        isLargeMenu: false,
+      ),
     );
   }
 
@@ -317,7 +334,11 @@ class ProductDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomActions(BuildContext context, ThemeData theme, {required bool isLargeMenu}) {
+  Widget _buildBottomActions(
+    BuildContext context,
+    ThemeData theme, {
+    required bool isLargeMenu,
+  }) {
     final actions = Row(
       children: [
         BlocBuilder<FavoritesBloc, FavoritesState>(
@@ -328,12 +349,14 @@ class ProductDetailsPage extends StatelessWidget {
               height: 56,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: isFav 
-                      ? Colors.red.withValues(alpha: 0.4) 
+                  color: isFav
+                      ? Colors.red.withValues(alpha: 0.4)
                       : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
                 ),
                 borderRadius: BorderRadius.circular(20),
-                color: isFav ? Colors.red.withValues(alpha: 0.1) : Colors.transparent,
+                color: isFav
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.transparent,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -345,9 +368,12 @@ class ProductDetailsPage extends StatelessWidget {
                   },
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+                    transitionBuilder: (child, animation) =>
+                        ScaleTransition(scale: animation, child: child),
                     child: Icon(
-                      isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      isFav
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
                       key: ValueKey(isFav),
                       color: isFav ? Colors.red : theme.colorScheme.primary,
                     ),
@@ -390,11 +416,8 @@ class ProductDetailsPage extends StatelessWidget {
 class _ImageCarousel extends StatefulWidget {
   final Product product;
   final bool showThumbnails;
-  
-  const _ImageCarousel({
-    required this.product, 
-    this.showThumbnails = false,
-  });
+
+  const _ImageCarousel({required this.product, this.showThumbnails = false});
 
   @override
   State<_ImageCarousel> createState() => _ImageCarouselState();
@@ -428,8 +451,8 @@ class _ImageCarouselState extends State<_ImageCarousel> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final images = widget.product.images.isNotEmpty 
-        ? widget.product.images 
+    final images = widget.product.images.isNotEmpty
+        ? widget.product.images
         : [widget.product.imageUrl];
 
     return Column(
@@ -460,9 +483,11 @@ class _ImageCarouselState extends State<_ImageCarousel> {
                         width: _currentIndex == index ? 24 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _currentIndex == index 
-                              ? theme.colorScheme.primary 
-                              : theme.colorScheme.primary.withValues(alpha: 0.2),
+                          color: _currentIndex == index
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                ),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -482,7 +507,7 @@ class _ImageCarouselState extends State<_ImageCarousel> {
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount: images.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     final isSelected = _currentIndex == index;
                     return GestureDetector(
@@ -494,8 +519,8 @@ class _ImageCarouselState extends State<_ImageCarousel> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isSelected 
-                                ? theme.colorScheme.primary 
+                            color: isSelected
+                                ? theme.colorScheme.primary
                                 : Colors.transparent,
                             width: 2,
                           ),
@@ -526,7 +551,9 @@ class _ImageCarouselState extends State<_ImageCarousel> {
         width: double.infinity,
         errorBuilder: (context, error, stackTrace) => Container(
           color: theme.colorScheme.surfaceContainerHigh,
-          child: const Center(child: Icon(Icons.broken_image_outlined, size: 48)),
+          child: const Center(
+            child: Icon(Icons.broken_image_outlined, size: 48),
+          ),
         ),
       );
     }
@@ -535,9 +562,8 @@ class _ImageCarouselState extends State<_ImageCarousel> {
       fit: BoxFit.cover,
       width: double.infinity,
       fadeInDuration: const Duration(milliseconds: 300),
-      placeholder: (context, url) => Container(
-        color: theme.colorScheme.surfaceContainerHighest,
-      ),
+      placeholder: (context, url) =>
+          Container(color: theme.colorScheme.surfaceContainerHighest),
       errorWidget: (context, url, error) => Container(
         color: theme.colorScheme.surfaceContainerHigh,
         child: const Center(child: Icon(Icons.broken_image_outlined, size: 48)),
@@ -552,7 +578,8 @@ class _AnimatedAddToCartButton extends StatefulWidget {
   const _AnimatedAddToCartButton({required this.product});
 
   @override
-  State<_AnimatedAddToCartButton> createState() => _AnimatedAddToCartButtonState();
+  State<_AnimatedAddToCartButton> createState() =>
+      _AnimatedAddToCartButtonState();
 }
 
 class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
@@ -562,7 +589,7 @@ class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
     if (_added) return; // Prevent multiple taps during animation
     HapticHelper.medium();
     context.read<CartBloc>().add(AddToCart(widget.product));
-    
+
     setState(() => _added = true);
     await Future.delayed(const Duration(milliseconds: 1500));
     if (mounted) setState(() => _added = false);
@@ -571,7 +598,7 @@ class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return GestureDetector(
       onTap: _handleTap,
       child: AnimatedContainer(
@@ -579,7 +606,9 @@ class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
         curve: Curves.easeOutCubic,
         height: 56,
         decoration: BoxDecoration(
-          color: _added ? theme.colorScheme.secondaryContainer : theme.colorScheme.secondary,
+          color: _added
+              ? theme.colorScheme.secondaryContainer
+              : theme.colorScheme.secondary,
           borderRadius: BorderRadius.circular(999),
         ),
         alignment: Alignment.center,
@@ -594,7 +623,10 @@ class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
                   key: const ValueKey('added'),
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_rounded, color: theme.colorScheme.onSecondaryContainer),
+                    Icon(
+                      Icons.check_rounded,
+                      color: theme.colorScheme.onSecondaryContainer,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Added!',
@@ -610,7 +642,10 @@ class _AnimatedAddToCartButtonState extends State<_AnimatedAddToCartButton> {
                   key: const ValueKey('add'),
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.onSecondary),
+                    Icon(
+                      Icons.shopping_bag_outlined,
+                      color: theme.colorScheme.onSecondary,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Add to Cart',
@@ -632,7 +667,7 @@ class _FeatureTile extends StatelessWidget {
   final IconData icon;
   final String text;
   final ThemeData theme;
-  
+
   const _FeatureTile({
     required this.icon,
     required this.text,
