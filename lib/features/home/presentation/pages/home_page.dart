@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isCompact = ResponsiveLayout.isCompact(context);
 
     return Scaffold(
       body: BlocBuilder<ProductsBloc, ProductsState>(
@@ -105,14 +106,16 @@ class _HomePageState extends State<HomePage> {
                             vertical: 16,
                           ),
                           centerTitle: false,
-                          title: Text(
-                            l10n.translate('app_name'),
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
+                          title: isCompact
+                              ? Text(
+                                  l10n.translate('app_name'),
+                                  style: theme.textTheme.headlineSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5,
+                                  ),
+                                )
+                              : null,
                           background: Container(
                             color: theme.scaffoldBackgroundColor
                                 .withValues(alpha: 0.7),

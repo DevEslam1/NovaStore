@@ -51,6 +51,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             Expanded(child: body),
           ],
         ),
+        floatingActionButton: _buildFloatingChatButton(context),
       );
     }
 
@@ -69,6 +70,29 @@ class _MainScaffoldState extends State<MainScaffold> {
       selectedIndex: _currentIndex,
       onDestinationSelected: _onTabTapped,
       extended: isExpanded,
+      groupAlignment: 0.0,
+      leading: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: isExpanded
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.storefront_rounded,
+                      color: theme.colorScheme.primary, size: 32),
+                  const SizedBox(width: 12),
+                  Text(
+                    'NovaStore',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ],
+              )
+            : Icon(Icons.storefront_rounded,
+                color: theme.colorScheme.primary, size: 28),
+      ),
       backgroundColor: theme.colorScheme.surfaceContainerLowest,
       selectedIconTheme: IconThemeData(color: theme.colorScheme.primary),
       unselectedIconTheme: IconThemeData(color: theme.colorScheme.outline),
@@ -178,6 +202,61 @@ class _MainScaffoldState extends State<MainScaffold> {
                   label: 'Profile',
                   isActive: _currentIndex == 4,
                   onTap: () => _onTabTapped(4),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingChatButton(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.primaryContainer,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            HapticHelper.medium();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Chat with Support coming soon!')),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white),
+                const SizedBox(width: 12),
+                const Text(
+                  'Support',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ],
             ),

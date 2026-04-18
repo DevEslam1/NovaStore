@@ -18,6 +18,7 @@ import 'features/cart/presentation/bloc/cart_bloc.dart';
 import 'features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'features/home/presentation/bloc/products_bloc.dart';
 import 'shared/widgets/network_banner.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +52,9 @@ class MyApp extends StatelessWidget {
           create: (context) => di.sl<AppConfigBloc>()..add(LoadConfig()),
         ),
         BlocProvider(create: (context) => di.sl<CartBloc>()..add(LoadCart())),
-        BlocProvider(create: (context) => di.sl<FavoritesBloc>()..add(LoadFavorites())),
+        BlocProvider(
+          create: (context) => di.sl<FavoritesBloc>()..add(LoadFavorites()),
+        ),
         BlocProvider(create: (context) => di.sl<OrdersBloc>()),
         BlocProvider(
           create: (context) =>
@@ -86,7 +89,10 @@ class MyApp extends StatelessWidget {
             // Routing
             routerConfig: AppRouter.router,
             builder: (context, child) {
-              return NetworkBanner(child: child!);
+              return NetworkBanner(
+                connectionChecker: di.sl<InternetConnectionChecker>(),
+                child: child!,
+              );
             },
           );
         },

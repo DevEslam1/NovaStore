@@ -4,8 +4,13 @@ import 'dart:async';
 
 class NetworkBanner extends StatefulWidget {
   final Widget child;
+  final InternetConnectionChecker? connectionChecker;
 
-  const NetworkBanner({super.key, required this.child});
+  const NetworkBanner({
+    super.key,
+    required this.child,
+    this.connectionChecker,
+  });
 
   @override
   State<NetworkBanner> createState() => _NetworkBannerState();
@@ -18,7 +23,8 @@ class _NetworkBannerState extends State<NetworkBanner> {
   @override
   void initState() {
     super.initState();
-    _subscription = InternetConnectionChecker.instance.onStatusChange.listen((status) {
+    final checker = widget.connectionChecker ?? InternetConnectionChecker.instance;
+    _subscription = checker.onStatusChange.listen((status) {
       final isConnected = status == InternetConnectionStatus.connected;
       if (_isConnected != isConnected) {
         setState(() {

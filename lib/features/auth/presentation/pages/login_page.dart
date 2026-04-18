@@ -122,9 +122,10 @@ class _LoginPageState extends State<LoginPage> {
                             const Spacer(),
                             Text(
                               'NovaStore',
-                              style: theme.textTheme.displayMedium?.copyWith(
+                              style: theme.textTheme.displaySmall?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
                               ),
                             ),
                             const SizedBox(height: 16),

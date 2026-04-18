@@ -31,28 +31,18 @@ class NotificationService {
       log('User declined or has not accepted permission');
     }
 
-    // Get initial FCM token (skipped on iOS — requires Apple Developer Account for APNS)
-    try {
-      if (!Platform.isIOS) {
-        final token = await _fcm.getToken();
-        if (token != null) {
-          log('FCM Token: $token');
-          await _sendTokenToServer(token);
-        }
-      } else {
-        log('Skipping FCM token on iOS (APNS not configured).');
-      }
-    } catch (e) {
-      log('Error getting FCM token: $e');
+    // Get initial FCM token
+    final token = await _getFCMToken();
+    if (token != null) {
+      log('Initial FCM Token: $token');
+      await _sendTokenToServer(token);
     }
 
     // Listen for token refresh
-    if (!Platform.isIOS) {
-      _fcm.onTokenRefresh.listen((String token) {
-        log('FCM Token Refreshed: $token');
-        _sendTokenToServer(token);
-      });
-    }
+    _fcm.onTokenRefresh.listen((String token) {
+      log('FCM Token Refreshed: $token');
+      _sendTokenToServer(token);
+    });
 
     // Handle background messages
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -78,14 +68,33 @@ class NotificationService {
 
     // Monitor auth state changes - resend token when user logs in
     authRepository.authStateChanges.listen((user) async {
-      if (user != null && !Platform.isIOS) {
-        final token = await _fcm.getToken();
+      if (user != null) {
+        final token = await _getFCMToken();
         if (token != null) {
           log('User logged in, syncing FCM token: $token');
           await _sendTokenToServer(token);
         }
       }
     });
+  }
+
+  /// Securely retrieves the FCM token, handling the APNS requirements on Apple platforms.
+  Future<String?> _getFCMToken() async {
+    try {
+      // On Apple platforms (iOS, macOS), getToken() will throw an error 
+      // if the APNS token is not yet available.
+      if (Platform.isIOS || Platform.isMacOS) {
+        final apnsToken = await _fcm.getAPNSToken();
+        if (apnsToken == null) {
+          log('APNS token not yet available. FCM token retrieval postponed.');
+          return null;
+        }
+      }
+      return await _fcm.getToken();
+    } catch (e) {
+      log('Error getting FCM token: $e');
+      return null;
+    }
   }
 
   Future<void> _sendTokenToServer(String token) async {
