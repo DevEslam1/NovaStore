@@ -5,20 +5,17 @@ import '../../../../shared/widgets/custom_button.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
+import '../../../../core/utils/responsive_layout.dart';
+import '../../../../core/utils/haptic_helper.dart';
 
-/// Shopping Cart — "NovaStore" design.
-///
-/// • Tonal-layered cart items: surfaceContainerLowest on surface background.
-/// • No borders — boundaries from background shifts.
-/// • Quantity controls with ghost-border containers.
-/// • Coral checkout CTA.
-/// • Empty state with premium illustration feel.
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isCompact = ResponsiveLayout.isCompact(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,6 +28,7 @@ class CartPage extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          HapticHelper.light();
           final bloc = context.read<CartBloc>();
           final future = bloc.stream.firstWhere((state) => !state.isLoading);
           bloc.add(LoadCart());
@@ -50,26 +48,61 @@ class CartPage extends StatelessWidget {
                     message: 'Browse our curated collection to find something you love.',
                     icon: Icons.shopping_bag_outlined,
                     actionLabel: 'Explore Products',
-                    onAction: () => context.go(AppRouter.home),
+                    onAction: () {
+                      HapticHelper.light();
+                      context.go(AppRouter.home);
+                    },
                   ),
                 ),
               );
             }
 
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-                    itemCount: state.items.length,
-                    itemBuilder: (context, index) {
-                      final item = state.items[index];
-                      return _CartItemTile(item: item);
-                    },
-                  ),
+            final cartList = ListView.builder(
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveLayout.getHorizontalPadding(context),
+                8,
+                ResponsiveLayout.getHorizontalPadding(context),
+                isCompact ? 16 : 120, // extra padding on large to allow scroll past
+              ),
+              itemCount: state.items.length,
+              itemBuilder: (context, index) {
+                final item = state.items[index];
+                return _CartItemTile(item: item);
+              },
+            );
+
+            if (isCompact) {
+              return Column(
+                children: [
+                  Expanded(child: cartList),
+                  _OrderSummary(state: state, isCompact: true),
+                ],
+              );
+            }
+
+            // Desktop / Tablet layout
+            final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 1200.0;
+            return Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: cartList,
+                    ),
+                    const SizedBox(width: 48),
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8, right: 32),
+                        child: _OrderSummary(state: state, isCompact: false),
+                      ),
+                    ),
+                  ],
                 ),
-                _OrderSummary(state: state),
-              ],
+              ),
             );
           },
         ),
@@ -85,109 +118,150 @@ class _CartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
-            blurRadius: 24,
-            offset: const Offset(0, 6),
-          ),
-        ],
+    
+    return Dismissible(
+      key: ValueKey(item.product.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        HapticHelper.medium();
+        context.read<CartBloc>().add(RemoveFromCart(item.product.id));
+      },
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.errorContainer,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        alignment: Alignment.centerRight,
+        child: Icon(
+          Icons.delete_outline_rounded,
+          color: theme.colorScheme.error,
+          size: 28,
+        ),
       ),
-      child: Row(
-        children: [
-          // Product Image (sm radius inside md card)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: item.product.imageUrl.startsWith('assets/')
-                ? Image.asset(
-                    item.product.imageUrl,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  )
-                : Image.network(
-                    item.product.imageUrl,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+              blurRadius: 24,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Product Image (sm radius inside md card)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: item.product.imageUrl.startsWith('assets/')
+                  ? Image.asset(
+                      item.product.imageUrl,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      item.product.imageUrl,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            const SizedBox(width: 16),
+            // Product Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.product.brand.toUpperCase(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                      letterSpacing: 0.8,
+                    ),
                   ),
-          ),
-          const SizedBox(width: 16),
-          // Product Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 4),
+                  Text(
+                    item.product.name,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (item.variant != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Variant: ${item.variant}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.outline,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${item.product.price.toStringAsFixed(2)}',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.secondary,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Quantity Controls (ghost-border)
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  item.product.brand.toUpperCase(),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.outline,
-                    letterSpacing: 0.8,
-                  ),
+                _QuantityButton(
+                  icon: Icons.add,
+                  onTap: () {
+                    HapticHelper.selection();
+                    context.read<CartBloc>().add(
+                      UpdateQuantity(item.product.id, item.quantity + 1),
+                    );
+                  },
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  item.product.name,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                if (item.variant != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
                     child: Text(
-                      'Variant: ${item.variant}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.outline,
+                      '${item.quantity}',
+                      key: ValueKey(item.quantity),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                const SizedBox(height: 8),
-                Text(
-                  '\$${item.product.price.toStringAsFixed(2)}',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.secondary,
-                    letterSpacing: 0,
-                  ),
+                ),
+                _QuantityButton(
+                  icon: Icons.remove,
+                  onTap: () {
+                    HapticHelper.selection();
+                    if (item.quantity > 1) {
+                      context.read<CartBloc>().add(
+                        UpdateQuantity(item.product.id, item.quantity - 1),
+                      );
+                    } else {
+                      HapticHelper.medium();
+                      context.read<CartBloc>().add(
+                        RemoveFromCart(item.product.id),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
-          ),
-          // Quantity Controls (ghost-border)
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _QuantityButton(
-                icon: Icons.add,
-                onTap: () => context.read<CartBloc>().add(
-                  UpdateQuantity(item.product.id, item.quantity + 1),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  '${item.quantity}',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              _QuantityButton(
-                icon: Icons.remove,
-                onTap: () => context.read<CartBloc>().add(
-                  UpdateQuantity(item.product.id, item.quantity - 1),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -218,11 +292,84 @@ class _QuantityButton extends StatelessWidget {
 
 class _OrderSummary extends StatelessWidget {
   final CartState state;
-  const _OrderSummary({required this.state});
+  final bool isCompact;
+  const _OrderSummary({required this.state, required this.isCompact});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
+    final content = SafeArea(
+      top: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SummaryRow(
+            label: 'Subtotal',
+            value: '\$${state.totalPrice.toStringAsFixed(2)}',
+            theme: theme,
+          ),
+          const SizedBox(height: 8),
+          _SummaryRow(
+            label: 'Shipping',
+            value: 'Free',
+            theme: theme,
+            isHighlighted: true,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Divider(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+                child: Text(
+                  '\$${state.totalPrice.toStringAsFixed(2)}',
+                  key: ValueKey(state.totalPrice),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          CustomButton(
+            text: 'Proceed to Checkout',
+            isSecondary: true,
+            onPressed: () {
+              HapticHelper.light();
+              context.push(AppRouter.checkout);
+            },
+            width: double.infinity,
+          ),
+        ],
+      ),
+    );
+
+    if (!isCompact) {
+      return Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2)),
+        ),
+        child: content,
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
       decoration: BoxDecoration(
@@ -236,55 +383,7 @@ class _OrderSummary extends StatelessWidget {
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            _SummaryRow(
-              label: 'Subtotal',
-              value: '\$${state.totalPrice.toStringAsFixed(2)}',
-              theme: theme,
-            ),
-            const SizedBox(height: 8),
-            _SummaryRow(
-              label: 'Shipping',
-              value: 'Free',
-              theme: theme,
-              isHighlighted: true,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Divider(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  '\$${state.totalPrice.toStringAsFixed(2)}',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            CustomButton(
-              text: 'Proceed to Checkout',
-              isSecondary: true,
-              onPressed: () => context.push(AppRouter.checkout),
-              width: double.infinity,
-            ),
-          ],
-        ),
-      ),
+      child: content,
     );
   }
 }

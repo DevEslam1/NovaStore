@@ -7,6 +7,9 @@ import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newstore/features/order/domain/entities/order_entity.dart';
 import 'package:newstore/features/order/presentation/bloc/orders_bloc.dart';
 import 'package:newstore/shared/widgets/empty_state_widget.dart';
+import 'package:newstore/core/utils/responsive_layout.dart';
+import 'package:newstore/core/utils/staggered_animation.dart';
+import 'package:newstore/core/utils/haptic_helper.dart';
 
 /// Orders — "NovaStore" design.
 class OrdersPage extends StatefulWidget {
@@ -81,13 +84,24 @@ class _OrdersPageState extends State<OrdersPage> {
                 );
               }
 
-              return ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  return _OrderCard(order: orders[index]);
-                },
+              final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 800.0;
+              final horizontalPadding = ResponsiveLayout.getHorizontalPadding(context);
+
+              return Center(
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 120),
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      return StaggeredListItem(
+                        index: index,
+                        child: _OrderCard(order: orders[index]),
+                      );
+                    },
+                  ),
+                ),
               );
             }
 
@@ -240,16 +254,19 @@ class _OrderCard extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: OutlinedButton(
-              onPressed: () => context.push(
-                AppRouter.orderTracking,
-                extra: {
-                  'id': order.id,
-                  'status': statusText,
-                  'date': dateFormatted,
-                  'total': order.totalAmount,
-                  'items': order.items.length,
-                },
-              ),
+              onPressed: () {
+                HapticHelper.light();
+                context.push(
+                  AppRouter.orderTracking,
+                  extra: {
+                    'id': order.id,
+                    'status': statusText,
+                    'date': dateFormatted,
+                    'total': order.totalAmount,
+                    'items': order.items.length,
+                  },
+                );
+              },
               child: const Text('Track Order'),
             ),
           ),

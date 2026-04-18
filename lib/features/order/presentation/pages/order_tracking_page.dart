@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:newstore/core/utils/responsive_layout.dart';
+import 'package:newstore/core/utils/haptic_helper.dart';
 
 /// Order Tracking — "NovaStore" design.
 ///
@@ -27,9 +29,14 @@ class OrderTrackingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 800.0;
+
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: CustomScrollView(
+            slivers: [
           // ── Gradient Header with order details ──
           SliverAppBar(
             expandedHeight: 310,
@@ -37,7 +44,10 @@ class OrderTrackingPage extends StatelessWidget {
             backgroundColor: theme.colorScheme.primary,
             surfaceTintColor: Colors.transparent,
             leading: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () {
+                HapticHelper.light();
+                Navigator.of(context).pop();
+              },
               child: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -211,7 +221,9 @@ class OrderTrackingPage extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          HapticHelper.light();
+                        },
                         icon: const Icon(Icons.support_agent_rounded, size: 20),
                         label: const Text('Contact Support'),
                       ),
@@ -222,6 +234,7 @@ class OrderTrackingPage extends StatelessWidget {
                       height: 56,
                       child: OutlinedButton(
                         onPressed: () {
+                          HapticHelper.medium();
                           Navigator.of(context).pop();
                         },
                         child: const Text('Back to Orders'),
@@ -234,7 +247,9 @@ class OrderTrackingPage extends StatelessWidget {
           ),
         ],
       ),
-    );
+     ),
+    ),
+   );
   }
 
   List<Widget> _buildTimeline(ThemeData theme) {

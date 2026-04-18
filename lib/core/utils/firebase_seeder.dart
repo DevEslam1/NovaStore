@@ -52,7 +52,12 @@ class FirebaseSeeder {
 
     debugPrint('Seeding products...');
     for (var product in SampleData.products) {
-      await collection.add(product);
+      final id = product['id'] as String?;
+      if (id != null) {
+        await collection.doc(id).set(product);
+      } else {
+        await collection.add(product);
+      }
     }
     debugPrint('Products seeded: ${SampleData.products.length}');
   }

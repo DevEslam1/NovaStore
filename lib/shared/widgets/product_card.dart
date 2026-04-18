@@ -7,6 +7,7 @@ import 'package:newstore/features/favorites/presentation/bloc/favorites_bloc.dar
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:newstore/core/theme/colors.dart';
+import '../../core/utils/haptic_helper.dart';
 
 /// Product card matching the "NovaStore" spec:
 ///   • Zero borders, `surfaceContainerLowest` background.
@@ -49,13 +50,16 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: _buildImage(theme),
+                  Hero(
+                    tag: 'product-image-${product.id}',
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: _buildImage(theme),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -66,6 +70,7 @@ class ProductCard extends StatelessWidget {
                         final isFav = state.isFavorite(product.id);
                         return GestureDetector(
                           onTap: () {
+                            HapticHelper.light();
                             context.read<FavoritesBloc>().add(ToggleFavorite(product));
                           },
                           child: Container(
@@ -128,87 +133,116 @@ class ProductCard extends StatelessWidget {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            '\$${product.price.toStringAsFixed(2)}',
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: theme.colorScheme.secondary,
-                              letterSpacing: 0,
+                          Hero(
+                            tag: 'product-price-${product.id}',
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: Text(
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.colorScheme.secondary,
+                                  letterSpacing: 0,
+                                ),
+                              ),
                             ),
                           ),
-                          if (!isInCart)
-                            GestureDetector(
-                              onTap: () {
-                                context.read<CartBloc>().add(AddToCart(product));
-                                _showAddedToCartToast(context, product.name, theme);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.add_shopping_cart_rounded,
-                                  color: theme.colorScheme.onPrimary,
-                                  size: 18,
-                                ),
-                              ),
-                            )
-                          else
-                            Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) {
+                              return ScaleTransition(scale: animation, child: child);
+                            },
+                            child: !isInCart
+                                ? GestureDetector(
+                                    key: const ValueKey('add_btn'),
                                     onTap: () {
-                                      if (quantity > 1) {
-                                        context.read<CartBloc>().add(
-                                          UpdateQuantity(product.id, quantity - 1),
-                                        );
-                                      } else {
-                                        context.read<CartBloc>().add(
-                                          RemoveFromCart(product.id),
-                                        );
-                                      }
+                                      HapticHelper.medium();
+                                      context.read<CartBloc>().add(AddToCart(product));
+                                      _showAddedToCartToast(context, product.name, theme);
                                     },
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primary,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                       child: Icon(
-                                        Icons.remove,
-                                        color: AppColors.onSuccess,
-                                        size: 16,
+                                        Icons.add_shopping_cart_rounded,
+                                        color: theme.colorScheme.onPrimary,
+                                        size: 18,
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    '$quantity',
-                                    style: theme.textTheme.labelLarge?.copyWith(
-                                      color: AppColors.onSuccess,
-                                      fontWeight: FontWeight.w700,
+                                  )
+                                : Container(
+                                    key: const ValueKey('qty_btn'),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            HapticHelper.selection();
+                                            if (quantity > 1) {
+                                              context.read<CartBloc>().add(
+                                                UpdateQuantity(product.id, quantity - 1),
+                                              );
+                                            } else {
+                                              context.read<CartBloc>().add(
+                                                RemoveFromCart(product.id),
+                                              );
+                                            }
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.remove,
+                                              color: AppColors.onSuccess,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
+                                        AnimatedSwitcher(
+                                          duration: const Duration(milliseconds: 200),
+                                          transitionBuilder: (child, animation) {
+                                            return SlideTransition(
+                                              position: Tween<Offset>(
+                                                begin: const Offset(0.0, -0.5),
+                                                end: Offset.zero,
+                                              ).animate(animation),
+                                              child: FadeTransition(opacity: animation, child: child),
+                                            );
+                                          },
+                                          child: Text(
+                                            '$quantity',
+                                            key: ValueKey<int>(quantity),
+                                            style: theme.textTheme.labelLarge?.copyWith(
+                                              color: AppColors.onSuccess,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            HapticHelper.selection();
+                                            context.read<CartBloc>().add(
+                                              UpdateQuantity(product.id, quantity + 1),
+                                            );
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.add,
+                                              color: AppColors.onSuccess,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      context.read<CartBloc>().add(
-                                        UpdateQuantity(product.id, quantity + 1),
-                                      );
-                                    },
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: AppColors.onSuccess,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          ),
                         ],
                       );
                     },
@@ -236,6 +270,7 @@ class ProductCard extends StatelessWidget {
       placeholder: (context, url) => Container(
         color: theme.colorScheme.surfaceContainerHigh,
       ),
+      fadeInDuration: const Duration(milliseconds: 300),
       errorWidget: (context, url, error) => _imagePlaceholder(theme),
     );
   }
@@ -299,25 +334,24 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.check_circle_rounded,
-                      color: AppColors.success,
+                      color: theme.colorScheme.onTertiaryContainer,
                       size: 20,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         '$productName added to cart',
                         style: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.onTertiaryContainer,
+                          fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
+                    TextButton(
+                      onPressed: () {
+                        HapticHelper.light();
                         entry.remove();
                         _currentToast = null;
                         controller.dispose();

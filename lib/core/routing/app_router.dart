@@ -22,6 +22,7 @@ import '../../features/profile/domain/entities/address_entity.dart';
 import '../../features/cart/domain/entities/cart_item.dart';
 import 'package:newstore/shared/domain/entities/product.dart';
 import '../di/injection_container.dart';
+import 'page_transitions.dart';
 
 import 'package:newstore/features/splash/presentation/pages/splash_page.dart';
 import 'package:newstore/features/auth/presentation/pages/otp_page.dart';
@@ -82,104 +83,155 @@ class AppRouter {
       ),
       GoRoute(
         path: home,
-        builder: (context, state) => const MainScaffold(),
+        pageBuilder: (context, state) => PageTransitions.fadeThrough(
+          key: state.pageKey,
+          child: const MainScaffold(),
+        ),
       ),
       GoRoute(
         path: onboarding,
-        builder: (context, state) => const OnboardingPage(),
+        pageBuilder: (context, state) => PageTransitions.fadeThrough(
+          key: state.pageKey,
+          child: const OnboardingPage(),
+        ),
       ),
       GoRoute(
         path: login,
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => PageTransitions.fadeThrough(
+          key: state.pageKey,
+          child: const LoginPage(),
+        ),
       ),
       GoRoute(
         path: register,
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder: (context, state) => PageTransitions.fadeThrough(
+          key: state.pageKey,
+          child: const RegisterPage(),
+        ),
       ),
       GoRoute(
         path: otp,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>?;
-          return OtpPage(
-            email: args?['email'] as String? ?? (args?['phoneNumber'] as String? ?? ''),
-            verificationId: args?['verificationId'] as String?,
+          return PageTransitions.fadeThrough(
+            key: state.pageKey,
+            child: OtpPage(
+              email: args?['email'] as String? ?? (args?['phoneNumber'] as String? ?? ''),
+              verificationId: args?['verificationId'] as String?,
+            ),
           );
         },
       ),
       GoRoute(
         path: checkout,
-        builder: (context, state) => const CheckoutPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const CheckoutPage(),
+        ),
       ),
       GoRoute(
         path: payment,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
-          return PaymentPage(
-            items: args['items'] as List<CartItem>,
-            subtotal: args['subtotal'] as double,
-            shippingFee: args['shippingFee'] as double,
-            tax: args['tax'] as double,
-            total: args['total'] as double,
-            shippingAddress: args['shippingAddress'] as String,
+          return PageTransitions.sharedAxisHorizontal(
+            key: state.pageKey,
+            child: PaymentPage(
+              items: args['items'] as List<CartItem>,
+              subtotal: args['subtotal'] as double,
+              shippingFee: args['shippingFee'] as double,
+              tax: args['tax'] as double,
+              total: args['total'] as double,
+              shippingAddress: args['shippingAddress'] as String,
+            ),
           );
         },
       ),
       GoRoute(
         path: search,
-        builder: (context, state) => const SearchPage(),
+        pageBuilder: (context, state) => PageTransitions.slideUpModal(
+          key: state.pageKey,
+          child: const SearchPage(),
+        ),
       ),
       GoRoute(
         path: categoryProducts,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final category = state.extra as String;
-          return CategoryProductsPage(category: category);
+          return PageTransitions.sharedAxisHorizontal(
+            key: state.pageKey,
+            child: CategoryProductsPage(category: category),
+          );
         },
       ),
       GoRoute(
         path: productDetails,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final product = state.extra as Product;
-          return ProductDetailsPage(product: product);
+          return PageTransitions.sharedAxisVertical(
+            key: state.pageKey,
+            child: ProductDetailsPage(product: product),
+          );
         },
       ),
       GoRoute(
         path: orders,
-        builder: (context, state) => const OrdersPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const OrdersPage(),
+        ),
       ),
       GoRoute(
         path: cart,
-        builder: (context, state) => const CartPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const CartPage(),
+        ),
       ),
       GoRoute(
         path: favorites,
-        builder: (context, state) => const FavoritesPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const FavoritesPage(),
+        ),
       ),
       GoRoute(
         path: notifications,
-        builder: (context, state) => const NotificationPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const NotificationPage(),
+        ),
       ),
       GoRoute(
         path: orderTracking,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
-          return OrderTrackingPage(
-            orderId: args['id'] as String,
-            status: args['status'] as String,
-            date: args['date'] as String,
-            total: args['total'] as double,
-            itemCount: args['items'] as int,
+          return PageTransitions.sharedAxisVertical(
+            key: state.pageKey,
+            child: OrderTrackingPage(
+              orderId: args['id'] as String,
+              status: args['status'] as String,
+              date: args['date'] as String,
+              total: args['total'] as double,
+              itemCount: args['items'] as int,
+            ),
           );
         },
       ),
       GoRoute(
         path: addresses,
-        builder: (context, state) => const AddressesPage(),
+        pageBuilder: (context, state) => PageTransitions.sharedAxisHorizontal(
+          key: state.pageKey,
+          child: const AddressesPage(),
+        ),
       ),
       GoRoute(
         path: addAddress,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final address = state.extra as AddressEntity?;
-          return AddAddressPage(address: address);
+          return PageTransitions.sharedAxisVertical(
+            key: state.pageKey,
+            child: AddAddressPage(address: address),
+          );
         },
       ),
     ],

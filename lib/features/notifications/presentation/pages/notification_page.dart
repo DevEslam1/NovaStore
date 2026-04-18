@@ -1,45 +1,55 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/notification_item.dart';
 import 'package:intl/intl.dart';
+import 'package:newstore/core/utils/responsive_layout.dart';
+import 'package:newstore/core/utils/staggered_animation.dart';
+import 'package:newstore/core/utils/haptic_helper.dart';
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
+
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  // Sample messages as requested
+  final List<NotificationItem> _notifications = [
+    NotificationItem(
+      id: '1',
+      title: '🔥 BIG SUMMER SALE!',
+      body: 'The biggest sale of the season is here! Up to 50% off on all items. Don\'t miss out on these exclusive deals.',
+      timestamp: DateTime.now(),
+      type: NotificationType.promotion,
+    ),
+    NotificationItem(
+      id: '2',
+      title: 'Order Shipped',
+      body: 'Your order #88219 has been handed over to our delivery partner and is on its way to you.',
+      timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
+      type: NotificationType.orderUpdate,
+    ),
+    NotificationItem(
+      id: '3',
+      title: 'New Collections Arrival',
+      body: 'Check out the new arrivals in our Tech & Lifestyle collections. Premium quality, curated just for you.',
+      timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
+      type: NotificationType.appUpdate,
+    ),
+    NotificationItem(
+      id: '4',
+      title: 'Security Update',
+      body: 'Your profile information has been successfully updated. If this wasn\'t you, please contact support immediately.',
+      timestamp: DateTime.now().subtract(const Duration(days: 3, hours: 1)),
+      type: NotificationType.appUpdate,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    // Sample messages as requested
-    final notifications = [
-      NotificationItem(
-        id: '1',
-        title: '🔥 BIG SUMMER SALE!',
-        body: 'The biggest sale of the season is here! Up to 50% off on all items. Don\'t miss out on these exclusive deals.',
-        timestamp: DateTime.now(),
-        type: NotificationType.promotion,
-      ),
-      NotificationItem(
-        id: '2',
-        title: 'Order Shipped',
-        body: 'Your order #88219 has been handed over to our delivery partner and is on its way to you.',
-        timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-        type: NotificationType.orderUpdate,
-      ),
-      NotificationItem(
-        id: '3',
-        title: 'New Collections Arrival',
-        body: 'Check out the new arrivals in our Tech & Lifestyle collections. Premium quality, curated just for you.',
-        timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 2)),
-        type: NotificationType.appUpdate,
-      ),
-      NotificationItem(
-        id: '4',
-        title: 'Security Update',
-        body: 'Your profile information has been successfully updated. If this wasn\'t you, please contact support immediately.',
-        timestamp: DateTime.now().subtract(const Duration(days: 3, hours: 1)),
-        type: NotificationType.appUpdate,
-      ),
-    ];
+    final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 800.0; // Narrower max-width for lists
+    final horizontalPadding = ResponsiveLayout.getHorizontalPadding(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,13 +61,57 @@ class NotificationPage extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final item = notifications[index];
-          return _NotificationTile(item: item);
-        },
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: maxWidth),
+          child: _notifications.isEmpty
+              ? Center(
+                  child: Text(
+                    'No new notifications',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding, 
+                    vertical: 16,
+                  ),
+                  itemCount: _notifications.length,
+                  itemBuilder: (context, index) {
+                    final item = _notifications[index];
+                    return StaggeredListItem(
+                      index: index,
+                      child: Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (_) {
+                          HapticHelper.medium();
+                          setState(() {
+                            _notifications.removeAt(index);
+                          });
+                        },
+                        background: Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Icons.delete_outline_rounded,
+                            color: theme.colorScheme.error,
+                            size: 28,
+                          ),
+                        ),
+                        child: _NotificationTile(item: item),
+                      ),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }

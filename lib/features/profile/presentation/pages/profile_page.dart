@@ -6,6 +6,8 @@ import '../../../../core/bloc/app_config_bloc.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import 'package:newstore/core/utils/firebase_seeder.dart';
 import 'package:newstore/core/routing/app_router.dart';
+import 'package:newstore/core/utils/responsive_layout.dart';
+import 'package:newstore/core/utils/haptic_helper.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -105,7 +107,12 @@ class ProfilePage extends StatelessWidget {
 
                   // ── Settings List ──
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 120),
+                    padding: EdgeInsets.fromLTRB(
+                      ResponsiveLayout.getHorizontalPadding(context), 
+                      28, 
+                      ResponsiveLayout.getHorizontalPadding(context), 
+                      120
+                    ),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
                         _SectionTitle(title: 'Account Settings', theme: theme),
@@ -426,7 +433,10 @@ class _ThemeOption extends StatelessWidget {
       trailing: isSelected
           ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
           : null,
-      onTap: onTap,
+      onTap: () {
+        HapticHelper.selection();
+        onTap();
+      },
     );
   }
 }

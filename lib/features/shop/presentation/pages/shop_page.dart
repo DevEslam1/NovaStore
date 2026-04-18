@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:newstore/core/routing/app_router.dart';
+import 'package:newstore/core/utils/responsive_layout.dart';
+import 'package:newstore/core/utils/staggered_animation.dart';
+import 'package:newstore/core/utils/haptic_helper.dart';
 import '../widgets/filter_modal.dart';
 
 /// Shop / Categories — "NovaStore" design.
@@ -23,7 +26,10 @@ class ShopPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.tune_rounded),
-            onPressed: () => FilterModal.show(context),
+            onPressed: () {
+              HapticHelper.light();
+              FilterModal.show(context);
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -43,15 +49,22 @@ class ShopPage extends StatelessWidget {
             return const Center(child: Text('No categories found.'));
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: docs.length,
+          final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 1200.0;
+          final crossAxisCount = ResponsiveLayout.getGridCrossAxisCount(context);
+          final horizontalPadding = ResponsiveLayout.getHorizontalPadding(context);
+
+          return Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: GridView.builder(
+                padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 120),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.0,
+                ),
+                itemCount: docs.length,
             itemBuilder: (context, index) {
               final cat = docs[index].data() as Map<String, dynamic>;
               // Fallback to determine icon
@@ -71,17 +84,25 @@ class ShopPage extends StatelessWidget {
                 icon = Icons.chair_rounded;
               }
 
-              return _CategoryCard(
-                label: cat['name'] as String? ?? 'Category',
-                imageUrl: cat['imageUrl'] as String? ?? '',
-                icon: icon,
-                onTap: () => context.push(
-                  AppRouter.categoryProducts,
-                  extra: cat['name'],
+              return StaggeredListItem(
+                index: index,
+                child: _CategoryCard(
+                  label: cat['name'] as String? ?? 'Category',
+                  imageUrl: cat['imageUrl'] as String? ?? '',
+                  icon: icon,
+                  onTap: () {
+                    HapticHelper.selection();
+                    context.push(
+                      AppRouter.categoryProducts,
+                      extra: cat['name'],
+                    );
+                  },
                 ),
               );
             },
-          );
+          ),
+        ),
+      );
         },
       ),
     );

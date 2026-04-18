@@ -32,6 +32,7 @@ class CartItemModel extends CartItem {
         description: entity.product.description,
         price: entity.product.price,
         imageUrl: entity.product.imageUrl,
+        images: entity.product.images,
         category: entity.product.category,
         brand: entity.product.brand,
         stock: entity.product.stock,

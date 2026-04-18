@@ -10,7 +10,7 @@ import 'package:newstore/features/home/presentation/bloc/products_bloc.dart';
 import 'package:newstore/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:newstore/shared/widgets/app_error_widget.dart';
 import 'package:newstore/shared/widgets/empty_state_widget.dart';
-
+import '../../../../core/utils/responsive_layout.dart';
 /// Home & Discovery screen following the "NovaStore" design system.
 /// Updated to support infinite scrolling via ProductsBloc.
 class HomePage extends StatefulWidget {
@@ -73,8 +73,10 @@ class _HomePageState extends State<HomePage> {
             // Simple partitioning for demonstration
             final flashDeals = allProducts.take(3).toList();
             final recommended = allProducts.skip(3).toList();
+            final maxWidth = ResponsiveLayout.getContentMaxWidth(context);
+            final horizontalPadding = ResponsiveLayout.getHorizontalPadding(context);
 
-            return RefreshIndicator(
+            final Widget content = RefreshIndicator(
               onRefresh: () async {
                 final bloc = context.read<ProductsBloc>();
                 final future = bloc.stream.firstWhere(
@@ -364,14 +366,13 @@ class _HomePageState extends State<HomePage> {
                   // ── Recommended Grid ──
                   if (recommended.isNotEmpty)
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                       sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: ResponsiveLayout.getGridCrossAxisCount(context),
                           mainAxisSpacing: 20,
                           crossAxisSpacing: 16,
-                          childAspectRatio: 0.65,
+                          childAspectRatio: ResponsiveLayout.getProductCardAspectRatio(context),
                         ),
                         delegate: SliverChildBuilderDelegate((context, index) {
                           final product = recommended[index];
@@ -410,12 +411,21 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 120),
+                  ),
                 ],
               ),
             );
-          }
 
+            if (maxWidth == null) return content;
+            return Center(
+              child: Container(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: content,
+              ),
+            );
+          }
           return const SizedBox.shrink();
         },
       ),

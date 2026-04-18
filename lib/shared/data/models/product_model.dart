@@ -7,6 +7,7 @@ class ProductModel extends Product {
     required super.description,
     required super.price,
     required super.imageUrl,
+    required super.images,
     required super.category,
     required super.brand,
     required super.stock,
@@ -19,6 +20,9 @@ class ProductModel extends Product {
       description: json['description'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['imageUrl'] as String? ?? '',
+      images: json['images'] != null 
+          ? List<String>.from(json['images'] as List) 
+          : [json['imageUrl'] as String? ?? ''],
       category: json['category'] as String? ?? '',
       brand: json['brand'] as String? ?? '',
       stock: (json['stock'] as num?)?.toInt() ?? 0,
@@ -32,6 +36,7 @@ class ProductModel extends Product {
       'description': description,
       'price': price,
       'imageUrl': imageUrl,
+      'images': images,
       'category': category,
       'brand': brand,
       'stock': stock,

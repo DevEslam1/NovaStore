@@ -9,6 +9,8 @@ import 'package:newstore/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:newstore/core/routing/app_router.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/utils/responsive_layout.dart';
+import '../../../../core/utils/haptic_helper.dart';
 
 /// Checkout: Payment & Confirm — "NovaStore" design.
 ///
@@ -73,297 +75,314 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(28, 8, 28, 28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = ResponsiveLayout.isCompact(context);
+
+          final leftContent = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Step Indicator ──
+              Row(
                 children: [
-                  // ── Step Indicator ──
-                  Row(
-                    children: [
-                      _StepDot(
-                        step: 1,
-                        label: 'Address',
-                        isCompleted: true,
-                        theme: theme,
-                      ),
-                      _StepConnector(isCompleted: true, theme: theme),
-                      _StepDot(
-                        step: 2,
-                        label: 'Delivery',
-                        isCompleted: true,
-                        theme: theme,
-                      ),
-                      _StepConnector(isCompleted: false, theme: theme),
-                      _StepDot(
-                        step: 3,
-                        label: 'Payment',
-                        isActive: true,
-                        theme: theme,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 36),
-
-                  // ── Payment Method Section ──
-                  Text(
-                    'Payment Method',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Select or add a payment method.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.outline,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // ── Saved Card: Visa ──
-                  Text(
-                    'SAVED CARDS',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.outline,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _PaymentCard(
-                    brand: 'Visa Platinum',
-                    lastFour: '8824',
-                    expiry: '05/27',
-                    icon: Icons.credit_card_rounded,
-                    gradientColors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.primaryContainer,
-                    ],
-                    isSelected: _selectedCardIndex == 0,
-                    onTap: () => setState(() => _selectedCardIndex = 0),
+                  _StepDot(
+                    step: 1,
+                    label: 'Address',
+                    isCompleted: true,
                     theme: theme,
                   ),
-                  const SizedBox(height: 12),
-
-                  // ── Saved Card: Mastercard ──
-                  _PaymentCard(
-                    brand: 'Mastercard World',
-                    lastFour: '1092',
-                    expiry: '11/25',
-                    icon: Icons.credit_card_rounded,
-                    gradientColors: [
-                      const Color(0xFF1A1A2E),
-                      const Color(0xFF16213E),
-                    ],
-                    isSelected: _selectedCardIndex == 1,
-                    onTap: () => setState(() => _selectedCardIndex = 1),
+                  _StepConnector(isCompleted: true, theme: theme),
+                  _StepDot(
+                    step: 2,
+                    label: 'Delivery',
+                    isCompleted: true,
                     theme: theme,
                   ),
-                  const SizedBox(height: 16),
-
-                  // ── Add New Card ──
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_rounded,
-                        size: 20,
-                        color: theme.colorScheme.primary,
-                      ),
-                      label: Text(
-                        'Add New Card',
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                  _StepConnector(isCompleted: false, theme: theme),
+                  _StepDot(
+                    step: 3,
+                    label: 'Payment',
+                    isActive: true,
+                    theme: theme,
                   ),
-
-                  const SizedBox(height: 36),
-
-                  // ── Order Summary ──
-                  Text(
-                    'Order Summary',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.03),
-                          blurRadius: 24,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // Product Preview
-                        Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                color: theme.colorScheme.surfaceContainerHigh,
-                                child: Icon(
-                                  Icons.watch_rounded,
-                                  color: theme.colorScheme.outline,
-                                  size: 28,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.items.first.product.name,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${widget.items.length} items',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.outline,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              '\$${widget.subtotal.toStringAsFixed(2)}',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Divider(
-                            color: theme.colorScheme.outlineVariant
-                                .withValues(alpha: 0.2),
-                          ),
-                        ),
-                        // Summary rows
-                        _SummaryRow(
-                          label: 'Subtotal',
-                          value: '\$${widget.subtotal.toStringAsFixed(2)}',
-                          theme: theme,
-                        ),
-                        const SizedBox(height: 8),
-                        _SummaryRow(
-                          label: 'Shipping',
-                          value: widget.shippingFee == 0 ? 'Free' : '\$${widget.shippingFee.toStringAsFixed(2)}',
-                          theme: theme,
-                          isHighlighted: widget.shippingFee == 0,
-                        ),
-                        const SizedBox(height: 8),
-                        _SummaryRow(
-                          label: 'Tax',
-                          value: '\$${widget.tax.toStringAsFixed(2)}',
-                          theme: theme,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Divider(
-                            color: theme.colorScheme.outlineVariant
-                                .withValues(alpha: 0.2),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            Text(
-                              '\$${widget.total.toStringAsFixed(2)}',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // ── Benefit Badges ──
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _BenefitBadge(
-                          icon: Icons.local_shipping_outlined,
-                          title: 'Free Delivery',
-                          subtitle: 'Orders over \$200',
-                          theme: theme,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: _BenefitBadge(
-                          icon: Icons.replay_rounded,
-                          title: 'Easy Returns',
-                          subtitle: '30-day window',
-                          theme: theme,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
                 ],
               ),
-            ),
-          ),
+              const SizedBox(height: 36),
 
-          // ── Bottom CTA Bar ──
-          BlocListener<OrdersBloc, OrdersState>(
+              // ── Payment Method Section ──
+              Text(
+                'Payment Method',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Select or add a payment method.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // ── Saved Card: Visa ──
+              Text(
+                'SAVED CARDS',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 14),
+              _PaymentCard(
+                brand: 'Visa Platinum',
+                lastFour: '8824',
+                expiry: '05/27',
+                icon: Icons.credit_card_rounded,
+                gradientColors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.primaryContainer,
+                ],
+                isSelected: _selectedCardIndex == 0,
+                onTap: () {
+                  HapticHelper.selection();
+                  setState(() => _selectedCardIndex = 0);
+                },
+                theme: theme,
+              ),
+              const SizedBox(height: 12),
+
+              // ── Saved Card: Mastercard ──
+              _PaymentCard(
+                brand: 'Mastercard World',
+                lastFour: '1092',
+                expiry: '11/25',
+                icon: Icons.credit_card_rounded,
+                gradientColors: [
+                  const Color(0xFF1A1A2E),
+                  const Color(0xFF16213E),
+                ],
+                isSelected: _selectedCardIndex == 1,
+                onTap: () {
+                  HapticHelper.selection();
+                  setState(() => _selectedCardIndex = 1);
+                },
+                theme: theme,
+              ),
+              const SizedBox(height: 16),
+
+              // ── Add New Card ──
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: OutlinedButton.icon(
+                  onPressed: () => HapticHelper.light(),
+                  icon: Icon(
+                    Icons.add_rounded,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: Text(
+                    'Add New Card',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              if (!isCompact) const SizedBox(height: 36),
+            ],
+          );
+
+          final rightContent = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Order Summary ──
+              Text(
+                'Order Summary',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.03),
+                      blurRadius: 24,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Product Preview
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            color: theme.colorScheme.surfaceContainerHigh,
+                            child: Icon(
+                              Icons.shopping_bag_outlined,
+                              color: theme.colorScheme.outline,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.items.isNotEmpty ? widget.items.first.product.name : 'Cart',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${widget.items.length} items',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.outline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '\$${widget.subtotal.toStringAsFixed(2)}',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(
+                        color: theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.2),
+                      ),
+                    ),
+                    // Summary rows
+                    _SummaryRow(
+                      label: 'Subtotal',
+                      value: '\$${widget.subtotal.toStringAsFixed(2)}',
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 8),
+                    _SummaryRow(
+                      label: 'Shipping',
+                      value: widget.shippingFee == 0 ? 'Free' : '\$${widget.shippingFee.toStringAsFixed(2)}',
+                      theme: theme,
+                      isHighlighted: widget.shippingFee == 0,
+                    ),
+                    const SizedBox(height: 8),
+                    _SummaryRow(
+                      label: 'Tax',
+                      value: '\$${widget.tax.toStringAsFixed(2)}',
+                      theme: theme,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Divider(
+                        color: theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.2),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          '\$${widget.total.toStringAsFixed(2)}',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Benefit Badges ──
+              Row(
+                children: [
+                  Expanded(
+                    child: _BenefitBadge(
+                      icon: Icons.local_shipping_outlined,
+                      title: 'Free Delivery',
+                      subtitle: 'Orders over \$200',
+                      theme: theme,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: _BenefitBadge(
+                      icon: Icons.replay_rounded,
+                      title: 'Easy Returns',
+                      subtitle: '30-day window',
+                      theme: theme,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+            ],
+          );
+
+          final ctaButton = BlocListener<OrdersBloc, OrdersState>(
             listener: (context, state) {
               if (state is OrderCreatedSuccess) {
-                // Clear cart after success
+                HapticHelper.heavy();
                 context.read<CartBloc>().add(ClearCart());
-                // Refresh orders
                 context.read<OrdersBloc>().add(LoadOrders(state.order.userId));
                 _showPaymentSuccessDialog(context, state.order);
               } else if (state is OrdersError) {
+                HapticHelper.medium();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message), backgroundColor: theme.colorScheme.error),
                 );
               }
             },
             child: Container(
-              padding: const EdgeInsets.fromLTRB(28, 20, 28, 32),
+              padding: isCompact
+                  ? const EdgeInsets.fromLTRB(28, 20, 28, 32)
+                  : const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-                boxShadow: [
+                color: isCompact
+                    ? theme.scaffoldBackgroundColor
+                    : theme.colorScheme.surfaceContainerLowest,
+                borderRadius: isCompact ? null : BorderRadius.circular(24),
+                boxShadow: isCompact ? [
                   BoxShadow(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
                     blurRadius: 24,
                     offset: const Offset(0, -8),
+                  ),
+                ] : [
+                  BoxShadow(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
+                    blurRadius: 24,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -379,6 +398,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           icon: Icons.lock_outline_rounded,
                           isLoading: state is OrdersLoading,
                           onPressed: () {
+                            HapticHelper.medium();
                             _createOrder(context);
                           },
                           width: double.infinity,
@@ -407,8 +427,58 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
-          ),
-        ],
+          );
+
+          if (isCompact) {
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(28, 8, 28, 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        leftContent,
+                        const SizedBox(height: 36),
+                        rightContent,
+                      ],
+                    ),
+                  ),
+                ),
+                ctaButton,
+              ],
+            );
+          }
+
+          final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 1200.0;
+          return Center(
+            child: SizedBox(
+              width: maxWidth,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(48, 24, 48, 48),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: leftContent,
+                    ),
+                    const SizedBox(width: 48),
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        children: [
+                          rightContent,
+                          ctaButton,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

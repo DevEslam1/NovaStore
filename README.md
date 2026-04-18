@@ -150,6 +150,8 @@ The UI follows a bespoke design system emphasizing **tonal layering** over borde
 - **🪟 Glassmorphism** — Floating nav with 80% opacity + backdrop blur
 - **🎭 Tonal Layering** — Depth through ambient surface stacking, not drop shadows
 - **📐 Intentional Asymmetry** — Editorial layouts that break the "template" feel
+- **📱 Adaptive Layouts** — Native-feel experiences on both Mobile (Compact) and Tablet (Expanded)
+- **⚡ Micro-Interactions** — Haptic feedback and staggered animations for a premium feel
 
 > 🔗 [**Explore the full design on Google Stitch →**](https://stitch.withgoogle.com/projects/17376586620053144181)
 
@@ -175,6 +177,9 @@ The UI follows a bespoke design system emphasizing **tonal layering** over borde
 | **User Profile** | Profile display, address management |
 | **Dark / Light Mode** | Full Material 3 theme switching |
 | **Localization** | English & Arabic (RTL) support |
+| **Tablet Support** | Fully responsive layout with NavigationRail & split-screen layouts |
+| **Image Carousel** | Premium multi-image swiping experience with indicators |
+| **Premium UX** | Integrated Haptic Feedback & Shake-to-Error visual effects |
 | **Shimmer Loading** | Skeleton UI states across all pages |
 | **Pull to Refresh** | Refresh data on Home, Cart, and Orders |
 | **Network Monitoring** | Offline banner with connectivity detection |
@@ -247,7 +252,7 @@ flutter run
 | Login / Sign Up | Email & password authentication |
 | OTP Verification | 6-digit pin code verification |
 | Home & Discovery | Hero banners, categories, product grids |
-| Product Details | Immersive product view with size picker |
+| Product Details | Multi-image carousel with interactive indicators |
 | Search Results | Real-time search with product cards |
 | Shop / Categories | Filterable category grid |
 | Shopping Cart | Cart management with price summary |
