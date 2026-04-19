@@ -107,8 +107,9 @@ class ProductCard extends StatelessWidget {
             ),
             // ── Details ──
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Brand label
@@ -146,30 +147,34 @@ class ProductCard extends StatelessWidget {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (useHero)
-                            Hero(
-                              tag: 'product-price-${product.id}',
-                              child: Material(
-                                type: MaterialType.transparency,
-                                child: Text(
-                                  '\$${product.price.toStringAsFixed(2)}',
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: theme.colorScheme.secondary,
-                                    letterSpacing: 0,
+                          Expanded(
+                            child: useHero
+                                ? Hero(
+                                    tag: 'product-price-${product.id}',
+                                    child: Material(
+                                      type: MaterialType.transparency,
+                                      child: Text(
+                                        '\$${product.price.toStringAsFixed(2)}',
+                                        style: theme.textTheme.labelLarge?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: theme.colorScheme.secondary,
+                                          letterSpacing: 0,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    '\$${product.price.toStringAsFixed(2)}',
+                                    style: theme.textTheme.labelLarge?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.colorScheme.secondary,
+                                      letterSpacing: 0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ),
-                            )
-                          else
-                            Text(
-                              '\$${product.price.toStringAsFixed(2)}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: theme.colorScheme.secondary,
-                                letterSpacing: 0,
-                              ),
-                            ),
+                          ),
+                          const SizedBox(width: 8),
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             transitionBuilder: (child, animation) {
