@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:newstore/core/utils/responsive_layout.dart';
 import 'package:newstore/core/utils/haptic_helper.dart';
@@ -29,6 +31,7 @@ class OrderTrackingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isCompact = ResponsiveLayout.isCompact(context);
     final maxWidth = ResponsiveLayout.getContentMaxWidth(context) ?? 800.0;
 
     return Scaffold(
@@ -37,219 +40,251 @@ class OrderTrackingPage extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: CustomScrollView(
             slivers: [
-          // ── Gradient Header with order details ──
-          SliverAppBar(
-            expandedHeight: 310,
-            pinned: true,
-            backgroundColor: theme.colorScheme.primary,
-            surfaceTintColor: Colors.transparent,
-            leading: GestureDetector(
-              onTap: () {
-                HapticHelper.light();
-                Navigator.of(context).pop();
-              },
-              child: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.arrow_back_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.primaryContainer,
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(28, 56, 28, 28),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Brand
-                        Text(
-                          'NovaStore',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Order ID
-                        Text(
-                          '#$orderId',
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Placed on $date · $itemCount Item${itemCount > 1 ? 's' : ''}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.7),
-                          ),
-                        ),
-                        const Spacer(),
-                                // Estimated Arrival Card
-                                if (status != 'Cancelled' && status != 'Delivered')
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 14,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.local_shipping_outlined,
-                                          color: Colors.white.withValues(alpha: 0.8),
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Current Status',
-                                              style: theme.textTheme.labelSmall?.copyWith(
-                                                color: Colors.white.withValues(alpha: 0.6),
-                                                letterSpacing: 0.5,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              status,
-                                              style: theme.textTheme.titleSmall?.copyWith(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
+              // ── Gradient Header with order details ──
+              SliverAppBar(
+                expandedHeight: isCompact ? 280 : 340,
+                pinned: true,
+                backgroundColor: theme.colorScheme.primary,
+                surfaceTintColor: Colors.transparent,
+                leading: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticHelper.light();
+                      Navigator.of(context).pop();
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.1),
                             ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                       ),
                     ),
                   ),
-
-          // ── Content Body ──
-          SliverToBoxAdapter(
-            child: Container(
-              transform: Matrix4.translationValues(0, -24, 0),
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(32),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.primaryContainer,
+                        ],
+                      ),
+                    ),
+                    child: SafeArea(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          28,
+                          isCompact ? 48 : 64,
+                          28,
+                          isCompact ? 20 : 32,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Brand
+                            Text(
+                              'NovaStore',
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Order ID
+                            Text(
+                              '#$orderId',
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                height: 1.1,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Placed on $date · $itemCount Item${itemCount > 1 ? 's' : ''}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.7),
+                              ),
+                            ),
+                            const Spacer(),
+                            // Estimated Arrival Card
+                            if (status != 'Cancelled' && status != 'Delivered')
+                              Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: isCompact ? double.infinity : 320,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.local_shipping_rounded,
+                                        color: Colors.white.withValues(alpha: 0.9),
+                                        size: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'CURRENT STATUS',
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: Colors.white.withValues(alpha: 0.5),
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          status,
+                                          style: theme.textTheme.titleSmall
+                                              ?.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(28, 32, 28, 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Shipping & Carrier Info ──
-                    Row(
+
+              // ── Content Body ──
+              SliverToBoxAdapter(
+                child: Container(
+                  transform: Matrix4.translationValues(0, -24, 0),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(32),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 32, 28, 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _InfoCard(
-                            title: 'Shipping To',
-                            icon: Icons.location_on_outlined,
-                            lines: [
-                              'Eslam Medhat',
-                              '123 Avenue Street',
-                              'Cairo, Egypt',
-                            ],
-                            theme: theme,
+                        // ── Shipping & Carrier Info ──
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _InfoCard(
+                                title: 'Shipping To',
+                                icon: Icons.location_on_rounded,
+                                lines: [
+                                  'Salem Moshref',
+                                  '123 Avenue Street',
+                                  'Cairo, Egypt',
+                                ],
+                                theme: theme,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _InfoCard(
+                                title: 'Carrier Info',
+                                icon: Icons.local_shipping_rounded,
+                                lines: [
+                                  'Global Express',
+                                  'Tracking: GE-99120034',
+                                  'Signature Required',
+                                ],
+                                theme: theme,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 36),
+
+                        // ── Delivery Timeline ──
+                        Text(
+                          'Delivery Timeline',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: _InfoCard(
-                            title: 'Carrier Info',
-                            icon: Icons.local_shipping_outlined,
-                            lines: [
-                              'Global Express',
-                              'Tracking: GE-99120034',
-                              'Signature Required',
-                            ],
-                            theme: theme,
+                        const SizedBox(height: 24),
+
+                        ..._buildTimeline(theme),
+
+                        const SizedBox(height: 32),
+
+                        // ── Action Buttons ──
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              HapticHelper.light();
+                            },
+                            icon: const Icon(
+                              Icons.support_agent_rounded,
+                              size: 20,
+                            ),
+                            label: const Text('Contact Support'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              HapticHelper.medium();
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Back to Orders'),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 36),
-
-                    // ── Delivery Timeline ──
-                    Text(
-                      'Delivery Timeline',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    ..._buildTimeline(theme),
-
-                    const SizedBox(height: 32),
-
-                    // ── Action Buttons ──
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          HapticHelper.light();
-                        },
-                        icon: const Icon(Icons.support_agent_rounded, size: 20),
-                        label: const Text('Contact Support'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          HapticHelper.medium();
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Back to Orders'),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
-     ),
-    ),
-   );
+    );
   }
 
   List<Widget> _buildTimeline(ThemeData theme) {
@@ -263,7 +298,7 @@ class OrderTrackingPage extends StatelessWidget {
           isFirst: true,
           isLast: true,
           theme: theme,
-        )
+        ),
       ];
     }
 
@@ -296,21 +331,22 @@ class OrderTrackingPage extends StatelessWidget {
       } else {
         stepState = _StepState.upcoming;
       }
-      
-      stepWidgets.add(_TimelineStep(
-        title: steps[i]['title']!,
-        subtitle: steps[i]['subtitle']!,
-        time: (i <= currentLevel && i == 0) ? date : null,
-        stepState: stepState,
-        isFirst: i == steps.length - 1, 
-        isLast: i == 0, 
-        theme: theme,
-      ));
+
+      stepWidgets.add(
+        _TimelineStep(
+          title: steps[i]['title']!,
+          subtitle: steps[i]['subtitle']!,
+          time: (i <= currentLevel && i == 0) ? date : null,
+          stepState: stepState,
+          isFirst: i == steps.length - 1,
+          isLast: i == 0,
+          theme: theme,
+        ),
+      );
     }
     return stepWidgets;
   }
 }
-
 
 // ─────────────────────────────────────────────────────────────
 // Info Card (Shipping To / Carrier Info)
@@ -331,52 +367,48 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
-            blurRadius: 24,
-            offset: const Offset(0, 6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+            blurRadius: 32,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryFixed.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: theme.colorScheme.primary, size: 16),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.outline,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: theme.colorScheme.primary, size: 20),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
+          Text(
+            title.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.outline,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 12),
           ...lines.map(
             (line) => Padding(
-              padding: const EdgeInsets.only(bottom: 3),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 line,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  height: 1.5,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  height: 1.4,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -433,8 +465,10 @@ class _TimelineStep extends StatelessWidget {
                   color: isFirst
                       ? Colors.transparent
                       : (isUpcoming
-                          ? theme.colorScheme.outlineVariant.withValues(alpha: 0.3)
-                          : theme.colorScheme.primary.withValues(alpha: 0.3)),
+                            ? theme.colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              )
+                            : theme.colorScheme.primary.withValues(alpha: 0.3)),
                 ),
                 // Dot
                 Container(
@@ -445,8 +479,8 @@ class _TimelineStep extends StatelessWidget {
                     color: isActive
                         ? theme.colorScheme.secondaryContainer
                         : isCompleted
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.surfaceContainerHigh,
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHigh,
                     border: isActive
                         ? Border.all(
                             color: theme.colorScheme.secondaryContainer
@@ -465,22 +499,35 @@ class _TimelineStep extends StatelessWidget {
                         : null,
                   ),
                   child: isCompleted
-                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 12)
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 12,
+                        )
                       : isActive
-                          ? Icon(Icons.local_shipping_rounded,
-                              color: theme.colorScheme.onSecondaryContainer,
-                              size: 12)
-                          : null,
+                      ? Icon(
+                          Icons.local_shipping_rounded,
+                          color: theme.colorScheme.onSecondaryContainer,
+                          size: 12,
+                        )
+                      : null,
                 ),
                 // Bottom connecting line
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isLast
-                        ? Colors.transparent
-                        : (isUpcoming
-                            ? theme.colorScheme.outlineVariant.withValues(alpha: 0.3)
-                            : theme.colorScheme.primary.withValues(alpha: 0.3)),
+                    decoration: BoxDecoration(
+                      color: isLast
+                          ? Colors.transparent
+                          : (isUpcoming
+                                ? theme.colorScheme.outlineVariant.withValues(
+                                    alpha: 0.2,
+                                  )
+                                : theme.colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  )),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
                   ),
                 ),
               ],
@@ -499,7 +546,9 @@ class _TimelineStep extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.04,
+                          ),
                           blurRadius: 20,
                           offset: const Offset(0, 4),
                         ),

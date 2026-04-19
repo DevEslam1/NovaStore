@@ -12,6 +12,8 @@ import 'package:newstore/features/auth/presentation/bloc/auth_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'core/routing/app_router.dart';
 import 'core/localization/app_localizations.dart';
+import 'dart:io';
+import 'package:window_manager/window_manager.dart';
 import 'core/di/injection_container.dart' as di;
 import 'core/bloc/app_config_bloc.dart';
 import 'features/cart/presentation/bloc/cart_bloc.dart';
@@ -19,6 +21,7 @@ import 'features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'features/home/presentation/bloc/products_bloc.dart';
 import 'shared/widgets/network_banner.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'core/utils/device_preview_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +40,22 @@ void main() async {
 
   // ── Notification Service ──
   await di.sl<NotificationService>().initialize();
+
+  // ── Window Manager (Desktop only) ──
+  if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1200, 800),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   runApp(const MyApp());
 }
@@ -89,9 +108,11 @@ class MyApp extends StatelessWidget {
             // Routing
             routerConfig: AppRouter.router,
             builder: (context, child) {
-              return NetworkBanner(
-                connectionChecker: di.sl<InternetConnectionChecker>(),
-                child: child!,
+              return DevicePreviewBar(
+                child: NetworkBanner(
+                  connectionChecker: di.sl<InternetConnectionChecker>(),
+                  child: child!,
+                ),
               );
             },
           );

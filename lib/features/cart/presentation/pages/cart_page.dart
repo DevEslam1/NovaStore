@@ -103,8 +103,9 @@ class CartPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 6,
+                      flex: 65,
                       child: SingleChildScrollView(
+                        padding: const EdgeInsets.only(bottom: 120),
                         child: Column(
                           children: [
                             cartList,
@@ -114,11 +115,11 @@ class CartPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 48),
+                    const SizedBox(width: 40),
                     Expanded(
-                      flex: 4,
+                      flex: 42,
                       child: Padding(
-                        padding: const EdgeInsets.only(top: 8, right: 32),
+                        padding: const EdgeInsets.only(top: 8, right: 16),
                         child: _OrderSummary(state: state, isCompact: false),
                       ),
                     ),
@@ -300,13 +301,20 @@ class _QuantityButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 32,
-        height: 32,
+        width: 36,
+        height: 36,
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(10),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: Icon(icon, size: 16, color: theme.colorScheme.primary),
+        child: Icon(icon, size: 18, color: theme.colorScheme.primary),
       ),
     );
   }
@@ -382,11 +390,20 @@ class _OrderSummary extends StatelessWidget {
 
     if (!isCompact) {
       return Container(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
+              blurRadius: 40,
+              offset: const Offset(0, 12),
+            ),
+          ],
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.15),
+          ),
         ),
         child: content,
       );
@@ -399,9 +416,9 @@ class _OrderSummary extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
             blurRadius: 32,
-            offset: const Offset(0, -12),
+            offset: const Offset(0, -8),
           ),
         ],
       ),
